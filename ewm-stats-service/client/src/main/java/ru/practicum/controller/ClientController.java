@@ -1,7 +1,7 @@
-package controller;
+package ru.practicum.controller;
 
-import client.StatClient;
-import dto.EndpointHitDto;
+import ru.practicum.client.StatClient;
+import ru.practicum.dto.EndpointHitDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

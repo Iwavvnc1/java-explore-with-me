@@ -1,6 +1,6 @@
-package service;
+package ru.practicum.service;
 
-import dto.EndpointHitDto;
+import ru.practicum.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

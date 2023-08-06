@@ -1,4 +1,4 @@
-package client_start;
+package ru.practicum.client_start;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
