@@ -1,4 +1,4 @@
-package Client;
+package client;
 
 import dto.EndpointHitDto;
 import org.springframework.beans.factory.annotation.Autowired;

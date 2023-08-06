@@ -1,4 +1,4 @@
-package Client;
+package client;
 
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;

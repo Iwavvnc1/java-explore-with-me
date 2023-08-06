@@ -1,6 +1,6 @@
-package Controller;
+package controller;
 
-import Client.StatClient;
+import client.StatClient;
 import dto.EndpointHitDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
