@@ -15,8 +15,14 @@
         <module>ewm-stats-service</module>
 		<module>ewm-service</module>
 	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+		</dependency>
+	</dependencies>
 
-    <groupId>ru.practicum</groupId>
+	<groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>

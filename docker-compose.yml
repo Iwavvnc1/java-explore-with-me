@@ -1,13 +1,13 @@
 version: '3.1'
 services:
   stats-server:
-    build: stats-server
+    build: ewm-stats-service/stat-server
     image: explore-with-me-stats-server
     container_name: stats_server_container
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:6541/?
-      - SPRING_DATASOURCE_USERNAME=?
-      - SPRING_DATASOURCE_PASSWORD=?
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:6541/ewmStatsService
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
       - "9090:9090"
       - "8081:8081"
@@ -19,18 +19,18 @@ services:
     ports:
       - "6541:6541"
     environment:
-      - POSTGRES_DB=?
-      - POSTGRES_USER=?
-      - POSTGRES_PASSWORD=?
+      - POSTGRES_DB=ewmStatsService
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   ewm-service:
     build: ewm-service
     image: explore-with-me-ewm-service
     container_name: ewm_service_container
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/?
-      - SPRING_DATASOURCE_USERNAME=?
-      - SPRING_DATASOURCE_PASSWORD=?
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/evmService
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
       - "8080:8080"
       - "8089:8089"
@@ -42,6 +42,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=?
-      - POSTGRES_USER=?
-      - POSTGRES_PASSWORD=?
+      - POSTGRES_DB=evmService
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

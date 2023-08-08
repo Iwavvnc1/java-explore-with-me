@@ -1,8 +1,8 @@
 package ru.practicum.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatDto;
-import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class DtoMapper {

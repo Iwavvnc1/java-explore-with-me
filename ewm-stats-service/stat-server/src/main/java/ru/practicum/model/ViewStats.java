@@ -1,13 +1,15 @@
 package ru.practicum.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class ViewStats {
     private String app;
     private String uri;
