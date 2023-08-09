@@ -14,16 +14,16 @@ public interface StatRepository extends JpaRepository<EndpointHit, Long> {
     @Query("select new ru.practicum.model.ViewStats(e.app, e.uri, COUNT(distinct e.ip)) " +
             "from EndpointHit as e " +
             "where e.timestamp between :start and :end " +
-            "and e.uri in :uris " +
-            "group by e.ip " +
-            "order by COUNT(distinct e.ip)")
+            "and (e.uri in :uris or :uris is null) " +
+            "group by e.uri, e.app " +
+            "order by COUNT(distinct e.ip)DESC ")
     List<ViewStats> getAllByTimeGroup(LocalDateTime start, LocalDateTime end, List<String> uris);
 
     @Query("select new ru.practicum.model.ViewStats(e.uri,e.app,COUNT(e.ip)) " +
             "from EndpointHit as e " +
             "where e.timestamp between :start and :end " +
-            "and e.uri in :uris " +
-            "group by e.ip " +
-            "order by COUNT(e.ip)")
+            "and (e.uri in :uris or :uris is null) " +
+            "group by e.uri, e.app " +
+            "order by COUNT(e.ip) DESC ")
     List<ViewStats> getAllByTime(LocalDateTime start, LocalDateTime end, List<String> uris);
 }

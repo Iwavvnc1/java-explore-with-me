@@ -5,30 +5,32 @@ services:
     image: explore-with-me-stats-server
     container_name: stats_server_container
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:6541/ewmStatsService
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewmStatsService
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
       - "9090:9090"
       - "8081:8081"
-
     depends_on:
       - stats-db
   stats-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
     ports:
-      - "6541:6541"
+      - "6541:5432"
     environment:
       - POSTGRES_DB=ewmStatsService
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
 
   ewm-service:
     build: ewm-service
     image: explore-with-me-ewm-service
     container_name: ewm_service_container
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/evmService
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/evmService
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
@@ -39,8 +41,10 @@ services:
 
   ewm-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
     ports:
-      - "5432:5432"
+      - "6542:5432"
     environment:
       - POSTGRES_DB=evmService
       - POSTGRES_USER=postgres
