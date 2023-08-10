@@ -11,6 +11,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.EndpointHitDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +28,14 @@ public class StatClient extends Client {
         );
     }
 
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        String manyUris = String.join(">", uris);
         Map<String, Object> parameters = Map.of(
-                "start", start,
-                "end", end,
-                "uris", uris,
+                "start", start.format(dateTimeFormatter),
+                "end", end.format(dateTimeFormatter),
+                "uris", manyUris,
                 "unique", unique
         );
         return get("/stats", parameters);

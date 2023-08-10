@@ -1,7 +1,10 @@
 package ru.practicum.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -11,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Getter
 public class EndpointHitDto {
     @NotNull
     private Long id;
@@ -24,5 +26,4 @@ public class EndpointHitDto {
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
-    private Long hits;
 }

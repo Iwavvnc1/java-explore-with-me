@@ -1,12 +1,12 @@
-package ru.practicum.client_start;
+package ru.practicum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ClientStart {
+public class ClientApp {
     public static void main(String[] args) {
-        SpringApplication.run(ClientStart.class, args);
+        SpringApplication.run(ClientApp.class, args);
     }
 
 }
