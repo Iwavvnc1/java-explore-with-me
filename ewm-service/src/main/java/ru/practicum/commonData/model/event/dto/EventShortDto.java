@@ -12,7 +12,7 @@ public class EventShortDto {
     private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     private Long id;
     private UserShortDto initiator;
-    private Boolean isPaid; //Нужно ли оплачивать участие
+    private Boolean paid; //Нужно ли оплачивать участие
     private String title; //Заголовок
     private Integer views; //Количество просмотрев события
 }

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class NewUserDto {
     @NotBlank
-    private String  email;
+    private String email;
     @NotBlank
     private String name;
 }

@@ -14,6 +14,7 @@ import ru.practicum.publicAccess.service.PublicCompilationService;
 @Slf4j
 public class PublicCompilationController {
     private final PublicCompilationService compilationService;
+
     @GetMapping("/compilations")
     public ResponseEntity<CompilationDto> getCompilationsEvents(@RequestParam(required = false) Boolean pinned,
                                                                 @RequestParam(defaultValue = "0") Integer From,

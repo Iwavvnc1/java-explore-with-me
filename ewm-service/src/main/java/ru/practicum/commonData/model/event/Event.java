@@ -32,11 +32,11 @@ public class Event {
     @ManyToOne
     private User initiator;
     private Location location; //Широта и долгота места проведения события
-    private Boolean isPaid; //Нужно ли оплачивать участие
+    private Boolean paid; //Нужно ли оплачивать участие
     private Integer participantLimit; //default: 0. Ограничение на количество участников.
     // Значение 0 - означает отсутствие ограничения
     private LocalDateTime publishedOn; //Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss")
-    private Boolean isRequestModeration; //default: true. Нужна ли пре-модерация заявок на участие
+    private Boolean requestModeration; //default: true. Нужна ли пре-модерация заявок на участие
     private State state; //Список состояний жизненного цикла события
     private String title; //Заголовок
     private Integer views; //Количество просмотрев события

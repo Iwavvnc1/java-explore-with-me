@@ -9,13 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.adminAccess.service.AdminEventsService;
 import ru.practicum.commonData.enums.State;
-import ru.practicum.commonData.model.compilation.dto.CompilationDto;
-import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.NewEventDto;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,18 +22,19 @@ import java.util.List;
 @RequestMapping(path = "/admin/events")
 public class AdminEventsController {
     private final AdminEventsService service;
+
     @GetMapping("/{compId}")
     public ResponseEntity<List<EventDto>> getEvents(@RequestParam(required = false) List<Long> users,
-                                              @RequestParam(required = false) List<State> states,
-                                              @RequestParam(required = false) List<Long> categories,
-                                              @RequestParam(required = false)
-                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                        LocalDateTime rangeStart,
-                                              @RequestParam(required = false)
-                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                        LocalDateTime rangeEnd,
-                                              @RequestParam(defaultValue = "0") int from,
-                                              @RequestParam(defaultValue = "10") int size) {
+                                                    @RequestParam(required = false) List<State> states,
+                                                    @RequestParam(required = false) List<Long> categories,
+                                                    @RequestParam(required = false)
+                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    LocalDateTime rangeStart,
+                                                    @RequestParam(required = false)
+                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    LocalDateTime rangeEnd,
+                                                    @RequestParam(defaultValue = "0") int from,
+                                                    @RequestParam(defaultValue = "10") int size) {
         AdminEventsParam requestParam = AdminEventsParam.builder()
                 .users(users)
                 .states(states)
@@ -48,9 +46,10 @@ public class AdminEventsController {
                 .build();
         return new ResponseEntity<>(service.getEvents(requestParam), HttpStatus.OK);
     }
+
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long eventId,
                                                 @RequestBody NewEventDto eventDto) {
-        return new ResponseEntity<>(service.updateEvent(eventId,eventDto),HttpStatus.OK);
+        return new ResponseEntity<>(service.updateEvent(eventId, eventDto), HttpStatus.OK);
     }
 }

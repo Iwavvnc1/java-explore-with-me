@@ -18,18 +18,21 @@ import javax.validation.Valid;
 @RequestMapping(path = "/admin/compilations")
 public class AdminCompilationsController {
     private final AdminCompilationsService service;
+
     @PostMapping
     public ResponseEntity<CompilationDto> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto) {
         return new ResponseEntity<>(service.createCompilation(compilationDto), HttpStatus.CREATED);
     }
+
     @DeleteMapping("/{compId}")
     public ResponseEntity deleteCompilation(@PathVariable Long compId) {
         service.deleteCompilation(compId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @PatchMapping("/{compId}")
     public ResponseEntity<CompilationDto> updateCompilation(@PathVariable Long compId,
-                                                      @RequestBody @Valid NewCompilationDto compilationDto) {
-        return new ResponseEntity<>(service.updateCompilation(compId,compilationDto),HttpStatus.OK);
+                                                            @RequestBody @Valid NewCompilationDto compilationDto) {
+        return new ResponseEntity<>(service.updateCompilation(compId, compilationDto), HttpStatus.OK);
     }
 }

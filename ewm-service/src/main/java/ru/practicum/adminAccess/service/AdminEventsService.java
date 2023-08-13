@@ -1,12 +1,10 @@
 package ru.practicum.adminAccess.service;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.NewEventDto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
