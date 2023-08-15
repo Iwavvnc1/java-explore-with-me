@@ -21,6 +21,7 @@ import static ru.practicum.commonData.mapper.event.EventMapper.*;
 public class PrivateEventsServiceImpl implements PrivateEventsService {
     private final EventRepository eventRepository;
     ObjectMapper objectMapper;
+
     public EventDto createEvent(Long userId, NewEventDto eventDto) {
         eventDateValidation(eventDto.getEventDate());
         return toEventDtoFromEvent(eventRepository.save(toEventFromNewEventDto(eventDto)));
@@ -28,11 +29,11 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
 
     public List<EventShortDto> getEventsCurrentUser(Long userId, int from, int size) {
         return toEventShortDtoListFromListEvents(eventRepository
-                .findAllByInitiatorId(userId, CustomPageRequest.of(from,size)).toList());
+                .findAllByInitiatorId(userId, CustomPageRequest.of(from, size)).toList());
     }
 
     public EventDto getEventById(Long userId, Long eventId) {
-        return toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId,userId).orElseThrow());
+        return toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId, userId).orElseThrow());
     }
 
     public ParticipationRequestDto getEventRequestsById(Long userId, Long eventId) {
@@ -41,9 +42,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
 
     @SneakyThrows
     public EventDto updateEventById(Long userId, Long eventId, UpdateEventUserRequest eventDto) {
-       Event event = eventRepository.findById(eventId).orElseThrow();
+        Event event = eventRepository.findById(eventId).orElseThrow();
         eventDateValidation(event.getEventDate());
-        objectMapper.updateValue(event,eventDto);
+        objectMapper.updateValue(event, eventDto);
         return toEventDtoFromEvent(eventRepository.save(event));
     }
 
@@ -52,7 +53,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     }
 
     private void eventDateValidation(LocalDateTime eventDate) {
-        if(eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Field: eventDate. Error: the date and time for which the event is scheduled " +
                     "cannot be earlier than two hours from the current moment. Value: " + eventDate);
         }

@@ -20,12 +20,14 @@ import java.util.List;
 @RequestMapping(path = "/categories")
 public class PublicCategoryController {
     private final PublicCategoryServiceImpl service;
+
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getCategories(@RequestParam(defaultValue = "0") Integer from,
                                                            @RequestParam(defaultValue = "10") Integer size) {
         log.info("Request GET /categories with from = {}, size = {}", from, size);
         return new ResponseEntity<>(service.getCategories(from, size), HttpStatus.OK);
     }
+
     @GetMapping("/{catId}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long catId) {
         log.info("Request GET /categories/{}", catId);

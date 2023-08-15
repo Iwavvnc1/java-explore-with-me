@@ -8,7 +8,6 @@ import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.category.dto.CategoryDto;
 import ru.practicum.commonData.model.location.Location;
 import ru.practicum.commonData.model.user.dto.UserDto;
-import ru.practicum.commonData.model.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 

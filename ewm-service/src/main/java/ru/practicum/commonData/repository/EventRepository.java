@@ -7,7 +7,8 @@ import ru.practicum.commonData.model.event.Event;
 
 import java.util.Optional;
 
-public interface EventRepository extends JpaRepository<Event,Long> {
+public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAllByInitiatorId(Long id, Pageable pageable);
+
     Optional<Event> findByIdIsAndInitiatorId(Long eventId, Long userId);
 }

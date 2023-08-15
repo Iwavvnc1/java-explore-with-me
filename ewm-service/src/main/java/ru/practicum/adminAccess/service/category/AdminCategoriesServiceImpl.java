@@ -7,12 +7,14 @@ import ru.practicum.commonData.model.category.dto.CategoryDto;
 import ru.practicum.commonData.model.category.dto.NewCategoryDto;
 import ru.practicum.commonData.repository.CategoryRepository;
 
-import static ru.practicum.commonData.mapper.category.CategoryMapper.*;
+import static ru.practicum.commonData.mapper.category.CategoryMapper.toCategory;
+import static ru.practicum.commonData.mapper.category.CategoryMapper.toCategoryDto;
 
 @RequiredArgsConstructor
 @Service
 public class AdminCategoriesServiceImpl implements AdminCategoriesService {
     private final CategoryRepository categoryRepository;
+
     public CategoryDto createCategory(NewCategoryDto categoryDto) {
         return toCategoryDto(categoryRepository.save(toCategory(categoryDto)));
     }

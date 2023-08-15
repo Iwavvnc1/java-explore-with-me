@@ -25,20 +25,21 @@ import java.util.List;
 @RequestMapping(path = "/events")
 public class PublicEventsController {
     private final PublicEventsServiceImpl service;
+
     @GetMapping
     public ResponseEntity<List<EventDto>> getEvents(@RequestParam(required = false) String text,
-                                                       @RequestParam(required = false) List<Long> categories,
-                                                       @RequestParam(required = false) Boolean paid,
-                                                       @RequestParam(required = false)
-                                                           @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                           LocalDateTime rangeStart,
-                                                       @RequestParam(required = false)
-                                                           @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-                                                           LocalDateTime rangeEnd,
-                                                       @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-                                                       @RequestParam(defaultValue = "EVENT_DATE") String sort,
-                                                       @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                       @RequestParam(defaultValue = "10") @Positive int size) {
+                                                    @RequestParam(required = false) List<Long> categories,
+                                                    @RequestParam(required = false) Boolean paid,
+                                                    @RequestParam(required = false)
+                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    LocalDateTime rangeStart,
+                                                    @RequestParam(required = false)
+                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    LocalDateTime rangeEnd,
+                                                    @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                    @RequestParam(defaultValue = "EVENT_DATE") String sort,
+                                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                    @RequestParam(defaultValue = "10") @Positive int size) {
         PublicEventsParam param = PublicEventsParam.builder()
                 .text(text)
                 .categories(categories)
@@ -53,6 +54,7 @@ public class PublicEventsController {
         log.info("Request GET /events with param = {}", param);
         return new ResponseEntity<>(service.getEvents(param), HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
         log.info("Request GET /events/{}", id);

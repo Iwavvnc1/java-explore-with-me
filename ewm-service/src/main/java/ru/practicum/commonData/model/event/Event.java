@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "Event")
+@Table(name = "events")
 public class Event {
     private String annotation; //Краткое описание
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
     private Integer confirmedRequests; //Количество одобренных заявок на участие в данном событии
     private LocalDateTime createdOn; //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
@@ -29,8 +29,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User initiator;
+    @Embedded
     private Location location; //Широта и долгота места проведения события
     private Boolean paid; //Нужно ли оплачивать участие
     private Integer participantLimit; //default: 0. Ограничение на количество участников.

@@ -9,8 +9,9 @@ import ru.practicum.commonData.model.event.dto.NewEventDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.commonData.mapper.category.CategoryMapper.*;
-import static ru.practicum.commonData.mapper.user.UserMapper.*;
+import static ru.practicum.commonData.mapper.category.CategoryMapper.toCategoryDto;
+import static ru.practicum.commonData.mapper.user.UserMapper.toUserDtoFromUser;
+import static ru.practicum.commonData.mapper.user.UserMapper.toUserShortDtoFromUser;
 
 @UtilityClass
 public class EventMapper {

@@ -21,7 +21,7 @@ public class AdminCategoriesController {
 
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@RequestBody @Valid NewCategoryDto categoryDto) {
-        log.info("Request POST /admin/categories c параметрами: dto = {}",categoryDto);
+        log.info("Request POST /admin/categories c параметрами: dto = {}", categoryDto);
         return new ResponseEntity<>(service.createCategory(categoryDto), HttpStatus.CREATED);
     }
 
@@ -35,7 +35,7 @@ public class AdminCategoriesController {
     @PatchMapping("/{catId}")
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long catId,
                                                       @RequestBody @Valid NewCategoryDto categoryDto) {
-        log.info("Request PATCH /admin/categories/{} c параметрами: dto = {}",catId, categoryDto);
+        log.info("Request PATCH /admin/categories/{} c параметрами: dto = {}", catId, categoryDto);
         return new ResponseEntity<>(service.update(catId, categoryDto), HttpStatus.OK);
     }
 }

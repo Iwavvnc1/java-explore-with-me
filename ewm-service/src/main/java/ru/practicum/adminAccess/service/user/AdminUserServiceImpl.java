@@ -15,6 +15,7 @@ import static ru.practicum.commonData.mapper.user.UserMapper.*;
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
     private final UserRepository userRepository;
+
     public UserDto createUser(NewUserDto userDto) {
         return toUserDtoFromUser(userRepository.save(toUserFromNewUserDto(userDto)));
     }
@@ -24,6 +25,6 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
-            return toUserDtoListFromListUsers(userRepository.getAllByIdIn(ids, CustomPageRequest.of(from,size)).toList());
+        return toUserDtoListFromListUsers(userRepository.getAllByIdIn(ids, CustomPageRequest.of(from, size)).toList());
     }
 }
