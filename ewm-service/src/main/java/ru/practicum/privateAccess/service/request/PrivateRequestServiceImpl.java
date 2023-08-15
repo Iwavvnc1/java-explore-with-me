@@ -1,8 +1,8 @@
-package ru.practicum.privateAccess.service;
+package ru.practicum.privateAccess.service.request;
 
 import ru.practicum.commonData.model.request.dto.ParticipationRequestDto;
 
-public class PrivateRequestService {
+public class PrivateRequestServiceImpl implements PrivateRequestService {
     public ParticipationRequestDto getRequests(Long userId) {
         return null;
     }

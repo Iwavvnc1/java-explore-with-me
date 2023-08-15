@@ -7,12 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.adminAccess.service.AdminEventsService;
+import ru.practicum.adminAccess.service.event.AdminEventsServiceImpl;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.NewEventDto;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping(path = "/admin/events")
 public class AdminEventsController {
-    private final AdminEventsService service;
+    private final AdminEventsServiceImpl service;
 
     @GetMapping("/{compId}")
     public ResponseEntity<List<EventDto>> getEvents(@RequestParam(required = false) List<Long> users,
@@ -33,8 +35,8 @@ public class AdminEventsController {
                                                     @RequestParam(required = false)
                                                     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
                                                     LocalDateTime rangeEnd,
-                                                    @RequestParam(defaultValue = "0") int from,
-                                                    @RequestParam(defaultValue = "10") int size) {
+                                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                    @RequestParam(defaultValue = "10") @Positive int size) {
         AdminEventsParam requestParam = AdminEventsParam.builder()
                 .users(users)
                 .states(states)
@@ -44,12 +46,14 @@ public class AdminEventsController {
                 .from(from)
                 .size(size)
                 .build();
+        log.info("Request GET /admin/events with param = {}", requestParam);
         return new ResponseEntity<>(service.getEvents(requestParam), HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long eventId,
                                                 @RequestBody NewEventDto eventDto) {
+        log.info("Request PATCH /admin/events/{} with dto = {}", eventId, eventDto);
         return new ResponseEntity<>(service.updateEvent(eventId, eventDto), HttpStatus.OK);
     }
 }

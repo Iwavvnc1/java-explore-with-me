@@ -1,11 +1,11 @@
-package ru.practicum.adminAccess.service;
+package ru.practicum.adminAccess.service.compilation;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
 
 @Service
-public class AdminCompilationsService {
+public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     public CompilationDto createCompilation(NewCompilationDto compilationDto) {
         return null;
     }
