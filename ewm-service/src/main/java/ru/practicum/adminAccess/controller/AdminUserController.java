@@ -22,14 +22,14 @@ public class AdminUserController {
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid NewUserDto userDto) {
-        log.info("Request POST /admin/users with dto = {}", userDto);
+        log.info("Request AUC POST /admin/users with dto = {}", userDto);
         return new ResponseEntity<>(service.createUser(userDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity deleteUser(@PathVariable Long userId) {
         service.deleteUser(userId);
-        log.info("Request DELETE /admin/users/{}", userId);
+        log.info("Request AUC DELETE /admin/users/{}", userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -37,7 +37,7 @@ public class AdminUserController {
     public ResponseEntity<List<UserDto>> getUsers(@RequestParam(required = false) List<Long> ids,
                                                   @RequestParam(defaultValue = "0") int from,
                                                   @RequestParam(defaultValue = "10") int size) {
-        log.info("Request GET /admin/users with ids = {}, from = {}, size = {}", ids, from, size);
+        log.info("Request AUC GET /admin/users with ids = {}, from = {}, size = {}", ids, from, size);
         return new ResponseEntity<>(service.getUsers(ids, from, size), HttpStatus.OK);
     }
 }

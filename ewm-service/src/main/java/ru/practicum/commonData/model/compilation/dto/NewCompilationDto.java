@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.commonData.model.event.dto.EventShortDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -16,9 +15,9 @@ import java.util.List;
 @Builder
 public class NewCompilationDto {
     @NotNull
-    private List<EventShortDto> events;
+    private Set<Long> events;
     @NotNull
-    private Boolean isPinned; //Закреплена ли подборка на главной странице сайта
+    private Boolean pinned; //Закреплена ли подборка на главной странице сайта
     @NotBlank
     private String title; //Заголовок подборки
 }

@@ -2,23 +2,20 @@ package ru.practicum.commonData.mapper.event;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.commonData.model.event.Event;
-import ru.practicum.commonData.model.event.dto.EventDto;
-import ru.practicum.commonData.model.event.dto.EventShortDto;
-import ru.practicum.commonData.model.event.dto.NewEventDto;
+import ru.practicum.commonData.model.event.dto.*;
+import ru.practicum.commonData.model.location.Location;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.commonData.mapper.category.CategoryMapper.toCategoryDto;
-import static ru.practicum.commonData.mapper.user.UserMapper.toUserDtoFromUser;
-import static ru.practicum.commonData.mapper.user.UserMapper.toUserShortDtoFromUser;
+import static ru.practicum.commonData.mapper.category.CategoryMapper.*;
+import static ru.practicum.commonData.mapper.user.UserMapper.*;
 
 @UtilityClass
 public class EventMapper {
     public Event toEventFromNewEventDto(NewEventDto eventDto) {
         return Event.builder()
                 .annotation(eventDto.getAnnotation())
-                .category(eventDto.getCategory())
                 .eventDate(eventDto.getEventDate())
                 .participantLimit(eventDto.getParticipantLimit())
                 .description(eventDto.getDescription())
@@ -61,6 +58,32 @@ public class EventMapper {
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .views(event.getViews())
+                .build();
+    }
+
+    public static Event toEventFromUpdateEventUser(UpdateEventUser dto) {
+        return Event.builder()
+                .annotation(dto.getAnnotation())
+                .description(dto.getDescription())
+                .eventDate(dto.getEventDate())
+                .paid(dto.getPaid())
+                .location(dto.getLocation() != null ? new Location(dto.getLocation().getLat(),
+                        dto.getLocation().getLon()) : null)
+                .participantLimit(dto.getParticipantLimit())
+                .title(dto.getTitle())
+                .build();
+    }
+
+    public static Event toEventFromUpdateEventAdmin(UpdateEventAdmin dto) {
+        return Event.builder()
+                .annotation(dto.getAnnotation())
+                .description(dto.getDescription())
+                .eventDate(dto.getEventDate())
+                .paid(dto.getPaid())
+                .location(dto.getLocation() != null ? new Location(dto.getLocation().getLat(),
+                        dto.getLocation().getLon()) : null)
+                .participantLimit(dto.getParticipantLimit())
+                .title(dto.getTitle())
                 .build();
     }
 

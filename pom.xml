@@ -40,7 +40,12 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+
+	</dependencies>
 
 	<groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>

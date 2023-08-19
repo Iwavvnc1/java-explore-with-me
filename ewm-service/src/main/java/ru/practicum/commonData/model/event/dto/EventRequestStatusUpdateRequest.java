@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.commonData.enums.Status;
 
 import java.util.List;
 
@@ -14,5 +13,5 @@ import java.util.List;
 @Builder
 public class EventRequestStatusUpdateRequest {
     List<Long> requestIds;
-    Status status;
+    String status;
 }

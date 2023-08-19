@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class StatController {
     @PostMapping("/hit")
     public ResponseEntity<EndpointHitDto> saveStatistic(@RequestBody EndpointHitDto endpointHit) {
         log.info("save Statistic");
-        return ResponseEntity.ok().body(statService.saveStatistic(endpointHit));
+        return new ResponseEntity<>(statService.saveStatistic(endpointHit), HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")

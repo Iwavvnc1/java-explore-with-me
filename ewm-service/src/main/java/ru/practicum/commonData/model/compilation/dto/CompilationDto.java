@@ -6,15 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.commonData.model.event.dto.EventShortDto;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CompilationDto {
-    private List<EventShortDto> events;
+    private Set<EventShortDto> events;
     private Long id;
-    private Boolean isPinned; //Закреплена ли подборка на главной странице сайта
+    private Boolean pinned; //Закреплена ли подборка на главной странице сайта
     private String title; //Заголовок подборки
 }

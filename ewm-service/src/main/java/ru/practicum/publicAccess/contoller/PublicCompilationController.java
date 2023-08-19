@@ -25,13 +25,13 @@ public class PublicCompilationController {
     public ResponseEntity<List<CompilationDto>> getCompilationsEvents(@RequestParam(required = false) Boolean pinned,
                                                                       @RequestParam(defaultValue = "0") Integer from,
                                                                       @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Request GET /compilations with pinned = {}, from = {}, size = {}", pinned, from, size);
+        log.info("Request PubCompC GET /compilations with pinned = {}, from = {}, size = {}", pinned, from, size);
         return new ResponseEntity<>(service.getCompilationsEvents(pinned, from, size), HttpStatus.OK);
     }
 
     @GetMapping("/{compId}")
     public ResponseEntity<CompilationDto> getCompilationsEventById(@PathVariable Long compId) {
-        log.info("Request GET /compilations/{}", compId);
+        log.info("Request PubCompC GET /compilations/{}", compId);
         return new ResponseEntity<>(service.getCompilationsEventById(compId), HttpStatus.OK);
     }
 }

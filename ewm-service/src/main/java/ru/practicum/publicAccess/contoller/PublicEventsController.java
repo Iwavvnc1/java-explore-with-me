@@ -2,6 +2,7 @@ package ru.practicum.publicAccess.contoller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 import ru.practicum.publicAccess.service.event.PublicEventsServiceImpl;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -25,6 +27,10 @@ import java.util.List;
 @RequestMapping(path = "/events")
 public class PublicEventsController {
     private final PublicEventsServiceImpl service;
+    //private final StatClient statClient;
+
+    @Value("${ewm.service.name}")
+    private String appServiceName;
 
     @GetMapping
     public ResponseEntity<List<EventDto>> getEvents(@RequestParam(required = false) String text,
@@ -39,7 +45,8 @@ public class PublicEventsController {
                                                     @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                     @RequestParam(defaultValue = "EVENT_DATE") String sort,
                                                     @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                    @RequestParam(defaultValue = "10") @Positive int size) {
+                                                    @RequestParam(defaultValue = "10") @Positive int size,
+                                                    HttpServletRequest request) {
         PublicEventsParam param = PublicEventsParam.builder()
                 .text(text)
                 .categories(categories)
@@ -51,13 +58,26 @@ public class PublicEventsController {
                 .from(from)
                 .size(size)
                 .build();
-        log.info("Request GET /events with param = {}", param);
+        log.info("Request PubEC GET /events with param = {}", param);
+        // saveStatistic(request);
         return new ResponseEntity<>(service.getEvents(param), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventDto> getEventById(@PathVariable Long id) {
-        log.info("Request GET /events/{}", id);
+    public ResponseEntity<EventDto> getEventById(@PathVariable Long id,
+                                                 HttpServletRequest request) {
+        log.info("Request PubEC GET /events/{}", id);
+        //saveStatistic(request);
         return new ResponseEntity<>(service.getEventById(id), HttpStatus.OK);
     }
+
+    /*private void saveStatistic(HttpServletRequest request) {
+        EndpointHitDto hitDto = EndpointHitDto.builder()
+                .app(appServiceName)
+                .ip(request.getRemoteAddr())
+                .uri(request.getRequestURI())
+                .timestamp(LocalDateTime.now())
+                .build();
+        statClient.saveStats(hitDto);
+    }*/
 }

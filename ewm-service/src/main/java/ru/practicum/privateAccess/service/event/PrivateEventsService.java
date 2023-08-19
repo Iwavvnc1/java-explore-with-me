@@ -12,9 +12,9 @@ public interface PrivateEventsService {
 
     EventDto getEventById(Long userId, Long eventId);
 
-    ParticipationRequestDto getEventRequestsById(Long userId, Long eventId);
+    List<ParticipationRequestDto> getEventRequestsById(Long userId, Long eventId);
 
-    EventDto updateEventById(Long userId, Long eventId, UpdateEventUserRequest eventDto);
+    EventDto updateEventById(Long userId, Long eventId, UpdateEventUser eventDto);
 
     EventRequestStatusUpdateResult updateEventRequestStatusById(Long userId, Long eventId,
                                                                 EventRequestStatusUpdateRequest updateRequest);

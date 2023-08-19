@@ -24,13 +24,13 @@ public class PublicCategoryController {
     @GetMapping
     public ResponseEntity<List<CategoryDto>> getCategories(@RequestParam(defaultValue = "0") Integer from,
                                                            @RequestParam(defaultValue = "10") Integer size) {
-        log.info("Request GET /categories with from = {}, size = {}", from, size);
+        log.info("Request PubCatC GET /categories with from = {}, size = {}", from, size);
         return new ResponseEntity<>(service.getCategories(from, size), HttpStatus.OK);
     }
 
     @GetMapping("/{catId}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long catId) {
-        log.info("Request GET /categories/{}", catId);
+        log.info("Request PubCatC GET /categories/{}", catId);
         return new ResponseEntity<>(service.getCategoryById(catId), HttpStatus.OK);
     }
 }

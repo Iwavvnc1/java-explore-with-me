@@ -11,7 +11,7 @@ import ru.practicum.adminAccess.service.event.AdminEventsServiceImpl;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
-import ru.practicum.commonData.model.event.dto.NewEventDto;
+import ru.practicum.commonData.model.event.dto.UpdateEventAdmin;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -46,14 +46,14 @@ public class AdminEventsController {
                 .from(from)
                 .size(size)
                 .build();
-        log.info("Request GET /admin/events with param = {}", requestParam);
+        log.info("Request AEC GET /admin/events with param = {}", requestParam);
         return new ResponseEntity<>(service.getEvents(requestParam), HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventDto> updateEvent(@PathVariable Long eventId,
-                                                @RequestBody NewEventDto eventDto) {
-        log.info("Request PATCH /admin/events/{} with dto = {}", eventId, eventDto);
+                                                @RequestBody UpdateEventAdmin eventDto) {
+        log.info("Request AEC PATCH /admin/events/{} with dto = {}", eventId, eventDto);
         return new ResponseEntity<>(service.updateEvent(eventId, eventDto), HttpStatus.OK);
     }
 }

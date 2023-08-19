@@ -19,23 +19,24 @@ import javax.validation.Valid;
 public class AdminCategoriesController {
     private final AdminCategoriesServiceImpl service;
 
+
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@RequestBody @Valid NewCategoryDto categoryDto) {
-        log.info("Request POST /admin/categories c параметрами: dto = {}", categoryDto);
+        log.info("Request ACatC POST /admin/categories with dto = {}", categoryDto);
         return new ResponseEntity<>(service.createCategory(categoryDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{catId}")
     public ResponseEntity deleteCategory(@PathVariable Long catId) {
         service.deleteCategory(catId);
-        log.info("Request DELETE /admin/categories/{}", catId);
+        log.info("Request ACatC DELETE /admin/categories/{}", catId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{catId}")
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long catId,
                                                       @RequestBody @Valid NewCategoryDto categoryDto) {
-        log.info("Request PATCH /admin/categories/{} c параметрами: dto = {}", catId, categoryDto);
+        log.info("Request ACatC PATCH /admin/categories/{} with dto = {}", catId, categoryDto);
         return new ResponseEntity<>(service.update(catId, categoryDto), HttpStatus.OK);
     }
 }

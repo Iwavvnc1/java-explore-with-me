@@ -22,7 +22,7 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean isPinned; //Закреплена ли подборка на главной странице сайта
+    private Boolean pinned; //Закреплена ли подборка на главной странице сайта
 
     private String title; //Заголовок подборки
 }

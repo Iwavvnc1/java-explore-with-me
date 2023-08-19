@@ -21,21 +21,21 @@ public class AdminCompilationsController {
 
     @PostMapping
     public ResponseEntity<CompilationDto> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto) {
-        log.info("Request POST /admin/compilations with dto = {}", compilationDto);
+        log.info("Request ACompC POST /admin/compilations with dto = {}", compilationDto);
         return new ResponseEntity<>(service.createCompilation(compilationDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{compId}")
     public ResponseEntity deleteCompilation(@PathVariable Long compId) {
         service.deleteCompilation(compId);
-        log.info("Request DELETE /admin/compilations/{}", compId);
+        log.info("Request ACompC DELETE /admin/compilations/{}", compId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{compId}")
     public ResponseEntity<CompilationDto> updateCompilation(@PathVariable Long compId,
                                                             @RequestBody @Valid NewCompilationDto compilationDto) {
-        log.info("Request PATCH /admin/compilations/{} with dto = {}", compId, compilationDto);
+        log.info("Request ACompC PATCH /admin/compilations/{} with dto = {}", compId, compilationDto);
         return new ResponseEntity<>(service.updateCompilation(compId, compilationDto), HttpStatus.OK);
     }
 }

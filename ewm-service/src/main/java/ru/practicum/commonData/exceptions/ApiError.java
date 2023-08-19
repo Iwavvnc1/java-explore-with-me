@@ -1,14 +1,24 @@
 package ru.practicum.commonData.exceptions;
 
-import org.springframework.http.HttpStatus;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApiError {
-    List<String> errors;
-    String message;
-    String reason;
-    HttpStatus status;
-    LocalDateTime timestamp;
+    private String message;
+    private String reason;
+    private String status;
+    private String timestamp;
+
+    public ApiError(String status, String reason, String message) {
+        this.status = status;
+        this.reason = reason;
+        this.message = message;
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.timestamp = LocalDateTime.now().format(dateTimeFormatter);
+    }
 }

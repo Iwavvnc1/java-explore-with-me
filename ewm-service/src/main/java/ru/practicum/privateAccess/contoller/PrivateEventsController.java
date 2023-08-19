@@ -23,7 +23,7 @@ public class PrivateEventsController {
     @PostMapping
     public ResponseEntity<EventDto> createEvent(@PathVariable Long userId,
                                                 @RequestBody @Valid NewEventDto eventDto) {
-        log.info("Request POST /users/{}/events with dto = {}", userId, eventDto);
+        log.info("Request PEC POST /users/{}/events with dto = {}", userId, eventDto);
         return new ResponseEntity<>(service.createEvent(userId, eventDto), HttpStatus.CREATED);
     }
 
@@ -31,29 +31,29 @@ public class PrivateEventsController {
     public ResponseEntity<List<EventShortDto>> getEventsCurrentUser(@PathVariable Long userId,
                                                                     @RequestParam(defaultValue = "0") int from,
                                                                     @RequestParam(defaultValue = "10") int size) {
-        log.info("Request GET /users/{}/events with from = {}, size = {}", userId, from, size);
+        log.info("Request PEC GET /users/{}/events with from = {}, size = {}", userId, from, size);
         return new ResponseEntity<>(service.getEventsCurrentUser(userId, from, size), HttpStatus.OK);
     }
 
     @GetMapping("/{eventId}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long userId,
                                                  @PathVariable Long eventId) {
-        log.info("Request GET /users/{}/events/{}", userId, eventId);
+        log.info("Request PEC GET /users/{}/events/{}", userId, eventId);
         return new ResponseEntity<>(service.getEventById(userId, eventId), HttpStatus.OK);
     }
 
     @GetMapping("/{eventId}/requests")
-    public ResponseEntity<ParticipationRequestDto> getEventRequestsById(@PathVariable Long userId,
-                                                                        @PathVariable Long eventId) {
-        log.info("Request GET /users/{}/events/{}", userId, eventId);
+    public ResponseEntity<List<ParticipationRequestDto>> getEventRequestsByEventId(@PathVariable Long userId,
+                                                                                   @PathVariable Long eventId) {
+        log.info("Request PEC GET /users/{}/events/{}", userId, eventId);
         return new ResponseEntity<>(service.getEventRequestsById(userId, eventId), HttpStatus.OK);
     }
 
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventDto> updateEventById(@PathVariable Long userId,
                                                     @PathVariable Long eventId,
-                                                    @RequestBody UpdateEventUserRequest eventDto) {
-        log.info("Request PATCH /users/{}/events/{} with dto = {}", userId, eventId, eventDto);
+                                                    @RequestBody UpdateEventUser eventDto) {
+        log.info("Request PEC PATCH /users/{}/events/{} with dto = {}", userId, eventId, eventDto);
         return new ResponseEntity<>(service.updateEventById(userId, eventId, eventDto), HttpStatus.OK);
     }
 
@@ -63,7 +63,7 @@ public class PrivateEventsController {
                                                                                         @RequestBody
                                                                                         EventRequestStatusUpdateRequest
                                                                                                 updateRequest) {
-        log.info("Request PATCH /users/{}/events/{} with dto = {}", userId, eventId, updateRequest);
+        log.info("Request PEC PATCH /users/{}/events/{} with dto = {}", userId, eventId, updateRequest);
         return new ResponseEntity<>(service.updateEventRequestStatusById(userId, eventId, updateRequest), HttpStatus.OK);
     }
 }
