@@ -1,6 +1,5 @@
 package ru.practicum.privateAccess.service.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +9,7 @@ import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.enums.StateAction;
 import ru.practicum.commonData.exceptions.ConflictException;
 import ru.practicum.commonData.exceptions.NotFoundException;
+import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.mapper.event.EventMapper;
 import ru.practicum.commonData.mapper.request.RequestMapper;
 import ru.practicum.commonData.model.event.Event;
@@ -20,7 +20,7 @@ import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.repository.RequestRepository;
 import ru.practicum.commonData.repository.UserRepository;
-import ru.practicum.commonData.shtoto.CustomPageRequest;
+import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +39,6 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     @Override
@@ -51,10 +50,13 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                         eventDto.getCategory()))));
         event.setInitiator(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId))));
-        event.setPublishedOn(LocalDateTime.now());
+        event.setCreatedOn(LocalDateTime.now());
         event.setViews(0);
+        event.setConfirmedRequests(0);
+        event.setState(State.PENDING);
         try {
             eventRepository.save(event);
+            eventRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException(e.getMessage(), e);
         }
@@ -90,22 +92,25 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Event not found with id = %d and userId = %d", eventId, userId)));
         eventDateValidation(oldEvent.getEventDate());
-        Event updateEvent = toEventFromUpdateEventUser(eventDto);
+        eventDateValidation(eventDto.getEventDate());
         if (oldEvent.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Event must not be published");
         }
         if (eventDto.getCategory() != null) {
-            updateEvent.setCategory(categoryRepository.findById(eventDto.getCategory())
+            oldEvent.setCategory(categoryRepository.findById(eventDto.getCategory())
                     .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found",
                             eventDto.getCategory()))));
         }
-        oldEvent = objectMapper.updateValue(oldEvent, updateEvent);
-        if (StateAction.CANCEL_REVIEW.toString().equals(eventDto.getStateAction().toString())) {
+
+        if (eventDto.getStateAction() != null && StateAction.CANCEL_REVIEW.toString()
+                .equals(eventDto.getStateAction().toString())) {
             oldEvent.setState(State.CANCELED);
-        } else if (StateAction.SEND_TO_REVIEW.toString().equals(eventDto.getStateAction().toString())) {
+        } else if (eventDto.getStateAction() != null && StateAction.SEND_TO_REVIEW.toString()
+                .equals(eventDto.getStateAction().toString())) {
             oldEvent.setState(State.PENDING);
         }
-        return toEventDtoFromEvent(eventRepository.save(oldEvent));
+        Event updateEvent = updateEventFromUpdateEventUsers(eventDto,oldEvent);
+        return toEventDtoFromEvent(eventRepository.save(updateEvent));
     }
 
     @Transactional
@@ -165,10 +170,10 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 confirmedRequests.forEach(reques -> {
                     if (!reques.getStatus().equals(CONFIRMED)) {
                         reques.setStatus(CONFIRMED);
-                    } else {
+                    } /*else {
                         throw new ConflictException(String.format("Request with id=%d has already been confirmed",
                                 reques.getId()));
-                    }
+                    }*/
                 });
                 rejectedRequests = requests.stream()
                         .skip(availableParticipants)
@@ -176,12 +181,12 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 rejectedRequests.forEach(reques -> {
                     if (!reques.getStatus().equals(REJECTED)) {
                         reques.setStatus(REJECTED);
-                    } else {
+                    } /*else {
                         throw new ConflictException(String.format("Request with id=%d has already been rejected",
                                 reques.getId()));
-                    }
+                    }*/
                 });
-                event.setConfirmedRequests(participantLimit);
+                event.setConfirmedRequests(approvedRequests + 1);
             }
         }
         eventRepository.save(event);
@@ -195,8 +200,8 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     }
 
     private void eventDateValidation(LocalDateTime eventDate) {
-        if (eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Field: eventDate. Error: the date and time for which the event is scheduled " +
+        if (eventDate != null && eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new NotValidException("Field: eventDate. Error: the date and time for which the event is scheduled " +
                     "cannot be earlier than two hours from the current moment. Value: " + eventDate);
         }
     }

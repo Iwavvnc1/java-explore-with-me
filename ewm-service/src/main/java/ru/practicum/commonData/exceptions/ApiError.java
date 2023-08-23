@@ -1,13 +1,11 @@
 package ru.practicum.commonData.exceptions;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class ApiError {
     private String message;
     private String reason;

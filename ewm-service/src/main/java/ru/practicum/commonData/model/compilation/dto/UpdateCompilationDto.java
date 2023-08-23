@@ -12,9 +12,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NewCompilationDto {
+public class UpdateCompilationDto {
     private Set<Long> events;
     private Boolean pinned; //Закреплена ли подборка на главной странице сайта
-    @Size(min = 1,max = 50)
+    @Size(min = 1, max = 50)
     private String title; //Заголовок подборки
 }

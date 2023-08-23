@@ -52,7 +52,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException(String.format("Event with id=%d is not published", eventId));
         }
-        if (event.getParticipantLimit().equals(event.getConfirmedRequests())) {
+        if (event.getParticipantLimit() != 0 && (event.getParticipantLimit().equals(event.getConfirmedRequests()))) {
             throw new ConflictException(String.format("Event with id=%d has reached participant limit", eventId));
         }
         if (!event.getRequestModeration()) {

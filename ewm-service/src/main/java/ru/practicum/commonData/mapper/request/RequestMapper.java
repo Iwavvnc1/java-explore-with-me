@@ -19,7 +19,8 @@ public class RequestMapper {
         return ParticipationRequest.builder()
                 .requester(user)
                 .created(LocalDateTime.now())
-                .status(event.getRequestModeration() ? PENDING : CONFIRMED)
+                .status(event.getParticipantLimit() == 0 ? CONFIRMED :
+                        (event.getRequestModeration() ? PENDING : CONFIRMED))
                 .event(event)
                 .build();
     }

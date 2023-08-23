@@ -6,7 +6,7 @@ import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.mapper.category.CategoryMapper;
 import ru.practicum.commonData.model.category.dto.CategoryDto;
 import ru.practicum.commonData.repository.CategoryRepository;
-import ru.practicum.commonData.shtoto.CustomPageRequest;
+import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;

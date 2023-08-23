@@ -5,18 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.commonData.model.event.dto.*;
 import ru.practicum.commonData.model.request.dto.ParticipationRequestDto;
 import ru.practicum.privateAccess.service.event.PrivateEventsServiceImpl;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping(path = "/users/{userId}/events")
+@Validated
 public class PrivateEventsController {
     private final PrivateEventsServiceImpl service;
 
@@ -29,8 +33,10 @@ public class PrivateEventsController {
 
     @GetMapping
     public ResponseEntity<List<EventShortDto>> getEventsCurrentUser(@PathVariable Long userId,
-                                                                    @RequestParam(defaultValue = "0") int from,
-                                                                    @RequestParam(defaultValue = "10") int size) {
+                                                                    @RequestParam(defaultValue = "0")
+                                                                    @PositiveOrZero Integer from,
+                                                                    @RequestParam(defaultValue = "10")
+                                                                        @Positive Integer size) {
         log.info("Request PEC GET /users/{}/events with from = {}, size = {}", userId, from, size);
         return new ResponseEntity<>(service.getEventsCurrentUser(userId, from, size), HttpStatus.OK);
     }
@@ -52,7 +58,7 @@ public class PrivateEventsController {
     @PatchMapping("/{eventId}")
     public ResponseEntity<EventDto> updateEventById(@PathVariable Long userId,
                                                     @PathVariable Long eventId,
-                                                    @RequestBody UpdateEventUser eventDto) {
+                                                    @RequestBody @Valid UpdateEventUser eventDto) {
         log.info("Request PEC PATCH /users/{}/events/{} with dto = {}", userId, eventId, eventDto);
         return new ResponseEntity<>(service.updateEventById(userId, eventId, eventDto), HttpStatus.OK);
     }

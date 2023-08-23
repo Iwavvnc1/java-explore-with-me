@@ -2,7 +2,6 @@ package ru.practicum.adminAccess.service.compilation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,7 @@ import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.model.compilation.Compilation;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
+import ru.practicum.commonData.model.compilation.dto.UpdateCompilationDto;
 import ru.practicum.commonData.repository.CompilationRepository;
 import ru.practicum.commonData.repository.EventRepository;
 
@@ -28,7 +28,11 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto compilationDto) {
         Compilation compilation = toCompilationFromNewCompilationDto(compilationDto);
-        compilation.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()).orElse(Set.of()));
+        if (compilationDto.getEvents() != null) {
+            compilation.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()).orElse(Set.of()));
+        } else {
+            compilation.setEvents(Set.of());
+        }
         try {
             compilation = compilationRepository.save(compilation);
         } catch (DataIntegrityViolationException e) {
@@ -47,14 +51,22 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     }
 
     @Transactional
-    @SneakyThrows
-    public CompilationDto updateCompilation(Long compId, NewCompilationDto compilationDto) {
+    public CompilationDto updateCompilation(Long compId, UpdateCompilationDto compilationDto) {
         Compilation compilationOld = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found", compId)));
-        Compilation compilationUpdate = toCompilationFromNewCompilationDto(compilationDto);
-        compilationUpdate.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()).orElse(Set.of()));
-        objectMapper.updateValue(compilationOld, compilationUpdate);
-        compilationRepository.save(compilationOld);
-        return toCompilationDtoFromCompilation(compilationOld);
+        if (compilationDto.getEvents() != null) {
+            compilationOld.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()).orElse(Set.of()));
+        }
+        Compilation updateCompilation = updateCompilationFromUpdateCompilationDto(compilationDto,compilationOld);
+        if (updateCompilation.getEvents() == null) {
+            updateCompilation.setEvents(Set.of());
+        }
+        try {
+            updateCompilation = compilationRepository.save(updateCompilation);
+            compilationRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException(e.getMessage(),e);
+        }
+        return toCompilationDtoFromCompilation(updateCompilation);
     }
 }

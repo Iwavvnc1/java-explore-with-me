@@ -28,7 +28,7 @@ public class PrivateRequestController {
     public ResponseEntity<ParticipationRequestDto> addRequest(@PathVariable Long userId,
                                                               @RequestParam Long eventId) {
         log.info("Request PRC POST /users/{}/requests with eventID = {}", userId, eventId);
-        return new ResponseEntity<>(service.addRequest(userId, eventId), HttpStatus.OK);
+        return new ResponseEntity<>(service.addRequest(userId, eventId), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{requestId}/cancel")

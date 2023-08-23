@@ -26,5 +26,6 @@ public class ParticipationRequest {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private User requester;
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

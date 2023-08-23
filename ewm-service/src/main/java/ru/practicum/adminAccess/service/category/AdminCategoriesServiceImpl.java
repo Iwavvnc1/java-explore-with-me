@@ -12,6 +12,7 @@ import ru.practicum.commonData.model.category.dto.NewCategoryDto;
 import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 
+
 import static ru.practicum.commonData.mapper.category.CategoryMapper.*;
 
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
         Category category;
         try {
             category = categoryRepository.save(toCategory(categoryDto));
+            categoryRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException(e.getMessage());
         }
@@ -44,7 +46,8 @@ public class AdminCategoriesServiceImpl implements AdminCategoriesService {
         Category category = toCategory(categoryDto);
         category.setId(catId);
         try {
-            category = categoryRepository.save(category);
+        category = categoryRepository.save(category);
+        categoryRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException(e.getMessage(), e);
         }

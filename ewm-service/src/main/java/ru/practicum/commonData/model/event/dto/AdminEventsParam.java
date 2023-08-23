@@ -19,6 +19,6 @@ public class AdminEventsParam {
     private List<Long> categories;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
-    private int from;
-    private int size;
+    private Integer from;
+    private Integer size;
 }

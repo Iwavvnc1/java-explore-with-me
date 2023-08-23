@@ -38,6 +38,7 @@ public class Event {
     // Значение 0 - означает отсутствие ограничения
     private LocalDateTime publishedOn; //Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss")
     private Boolean requestModeration; //default: true. Нужна ли пре-модерация заявок на участие
+    @Enumerated(EnumType.STRING)
     private State state; //Список состояний жизненного цикла события
     private String title; //Заголовок
     private Integer views; //Количество просмотрев события

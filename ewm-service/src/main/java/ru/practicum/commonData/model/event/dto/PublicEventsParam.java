@@ -20,6 +20,6 @@ public class PublicEventsParam {
     private LocalDateTime rangeEnd;
     private Boolean onlyAvailable;
     private String sort;
-    private int from;
-    private int size;
+    private Integer from;
+    private Integer size;
 }

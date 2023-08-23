@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.adminAccess.service.compilation.AdminCompilationsServiceImpl;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
+import ru.practicum.commonData.model.compilation.dto.UpdateCompilationDto;
 
 import javax.validation.Valid;
 
@@ -34,7 +35,7 @@ public class AdminCompilationsController {
 
     @PatchMapping("/{compId}")
     public ResponseEntity<CompilationDto> updateCompilation(@PathVariable Long compId,
-                                                            @RequestBody @Valid NewCompilationDto compilationDto) {
+                                                            @RequestBody @Valid UpdateCompilationDto compilationDto) {
         log.info("Request ACompC PATCH /admin/compilations/{} with dto = {}", compId, compilationDto);
         return new ResponseEntity<>(service.updateCompilation(compId, compilationDto), HttpStatus.OK);
     }

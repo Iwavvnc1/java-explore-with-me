@@ -1,5 +1,6 @@
 package ru.practicum.commonData.model.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +20,10 @@ public class EventDto {
     private String annotation; //Краткое описание
     private CategoryDto category;
     private Integer confirmedRequests; //Количество одобренных заявок на участие в данном событии
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn; //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
     private String description; //Полное описание события
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     private Long id;
     private UserDto initiator;
@@ -28,6 +31,7 @@ public class EventDto {
     private Boolean paid; //Нужно ли оплачивать участие
     private Integer participantLimit; //default: 0. Ограничение на количество участников.
     // Значение 0 - означает отсутствие ограничения
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn; //Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss")
     private Boolean requestModeration; //default: true. Нужна ли пре-модерация заявок на участие
     private State state; //Список состояний жизненного цикла события

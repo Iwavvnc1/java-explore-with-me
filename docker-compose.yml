@@ -33,6 +33,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/evmService
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+      - NAME_SERVICE=http://stats-server:9090
     ports:
       - "8080:8080"
       - "8089:8089"
