@@ -1,12 +1,13 @@
 package ru.practicum.adminAccess.service.compilation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.exceptions.ConflictException;
 import ru.practicum.commonData.exceptions.NotFoundException;
+import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.model.compilation.Compilation;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
@@ -23,7 +24,6 @@ import static ru.practicum.commonData.mapper.compilation.CompilationMapper.*;
 public class AdminCompilationsServiceImpl implements AdminCompilationsService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto compilationDto) {
@@ -35,8 +35,9 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         }
         try {
             compilation = compilationRepository.save(compilation);
+            compilationRepository.flush();
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(e.getMessage(), e);
+            throw new NotValidException(e.getMessage(), e);
         }
         return toCompilationDtoFromCompilation(compilation);
     }
@@ -58,9 +59,6 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
             compilationOld.setEvents(eventRepository.findAllByIdIn(compilationDto.getEvents()).orElse(Set.of()));
         }
         Compilation updateCompilation = updateCompilationFromUpdateCompilationDto(compilationDto,compilationOld);
-        if (updateCompilation.getEvents() == null) {
-            updateCompilation.setEvents(Set.of());
-        }
         try {
             updateCompilation = compilationRepository.save(updateCompilation);
             compilationRepository.flush();
