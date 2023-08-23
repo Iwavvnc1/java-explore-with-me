@@ -1,6 +1,8 @@
 package ru.practicum.commonData.mapper.request;
 
 import lombok.experimental.UtilityClass;
+import org.hibernate.Hibernate;
+import ru.practicum.commonData.model.category.Category;
 import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.request.ParticipationRequest;
 import ru.practicum.commonData.model.request.dto.ParticipationRequestDto;
@@ -15,6 +17,8 @@ import static ru.practicum.commonData.enums.Status.PENDING;
 @UtilityClass
 public class RequestMapper {
     public ParticipationRequest toParticipationRequest(User user, Event event) {
+        event.setInitiator(Hibernate.unproxy(event.getInitiator(), User.class));
+        event.setCategory(Hibernate.unproxy(event.getCategory(), Category.class));
         return ParticipationRequest.builder()
                 .requester(user)
                 .status(event.getParticipantLimit() == 0 ? CONFIRMED :

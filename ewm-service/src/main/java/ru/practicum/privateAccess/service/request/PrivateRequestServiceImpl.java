@@ -59,7 +59,8 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
-        return toParticipationRequestDto(requestRepository.save(toParticipationRequest(user, event)));
+        ParticipationRequest participationRequest = requestRepository.save(toParticipationRequest(user, event));
+        return toParticipationRequestDto(participationRequest);
     }
 
     @Transactional
