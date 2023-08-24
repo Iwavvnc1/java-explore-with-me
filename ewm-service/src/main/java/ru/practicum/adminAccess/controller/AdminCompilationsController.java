@@ -22,7 +22,7 @@ public class AdminCompilationsController {
 
     @PostMapping
     public ResponseEntity<CompilationDto> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto) {
-        log.info("Request ACompC POST /admin/compilations with dto = {}", compilationDto);
+        //log.info("Request ACompC POST /admin/compilations with dto = {}", compilationDto);
         return new ResponseEntity<>(service.createCompilation(compilationDto), HttpStatus.CREATED);
     }
 
