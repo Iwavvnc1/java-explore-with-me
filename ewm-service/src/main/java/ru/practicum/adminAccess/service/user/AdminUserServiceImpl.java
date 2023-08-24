@@ -26,6 +26,7 @@ public class AdminUserServiceImpl implements AdminUserService {
         User user;
         try {
             user = userRepository.save(toUserFromNewUserDto(userDto));
+            userRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Email is busy");
         }
@@ -36,6 +37,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     public void deleteUser(Long userId) {
         try {
             userRepository.deleteById(userId);
+            userRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException(String.format("User with id=%d was not found", userId));
         }

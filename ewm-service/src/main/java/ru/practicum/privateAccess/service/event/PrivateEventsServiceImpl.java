@@ -110,7 +110,13 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
             oldEvent.setState(State.PENDING);
         }
         Event updateEvent = updateEventFromUpdateEventUsers(eventDto,oldEvent);
-        return toEventDtoFromEvent(eventRepository.save(updateEvent));
+        try {
+            updateEvent = eventRepository.save(updateEvent);
+            eventRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new NotValidException(e.getMessage());
+        }
+        return toEventDtoFromEvent(updateEvent);
     }
 
     @Transactional
@@ -181,17 +187,20 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 rejectedRequests.forEach(reques -> {
                     if (!reques.getStatus().equals(REJECTED)) {
                         reques.setStatus(REJECTED);
-                    } /*else {
-                        throw new ConflictException(String.format("Request with id=%d has already been rejected",
-                                reques.getId()));
-                    }*/
+                    }
                 });
                 event.setConfirmedRequests(approvedRequests + 1);
             }
         }
-        eventRepository.save(event);
-        requestRepository.saveAll(confirmedRequests);
-        requestRepository.saveAll(rejectedRequests);
+        try {
+            eventRepository.save(event);
+            requestRepository.saveAll(confirmedRequests);
+            requestRepository.saveAll(rejectedRequests);
+            eventRepository.flush();
+            requestRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new NotValidException(e.getMessage());
+        }
         List<ParticipationRequestDto> confirmedRequestDto = confirmedRequests.stream()
                 .map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
         List<ParticipationRequestDto> rejectedRequestsDto = rejectedRequests.stream()

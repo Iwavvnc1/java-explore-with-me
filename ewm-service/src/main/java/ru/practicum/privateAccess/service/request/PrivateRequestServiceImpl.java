@@ -1,12 +1,14 @@
 package ru.practicum.privateAccess.service.request;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.enums.Status;
 import ru.practicum.commonData.exceptions.ConflictException;
 import ru.practicum.commonData.exceptions.NotFoundException;
+import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.mapper.request.RequestMapper;
 import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.request.ParticipationRequest;
@@ -59,7 +61,13 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
-        ParticipationRequest participationRequest = requestRepository.save(toParticipationRequest(user, event));
+        ParticipationRequest participationRequest;
+        try {
+            participationRequest = requestRepository.save(toParticipationRequest(user, event));
+            requestRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new NotValidException(e.getMessage());
+        }
         return toParticipationRequestDto(participationRequest);
     }
 
@@ -70,6 +78,12 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                 .orElseThrow(() -> new NotFoundException(String.format("Request with id=%d " +
                         "and requesterId=%d was not found", requestId, userId)));
         request.setStatus(Status.CANCELED);
-        return toParticipationRequestDto(requestRepository.save(request));
+        try {
+            request = requestRepository.save(request);
+            requestRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new NotValidException(e.getMessage());
+        }
+        return toParticipationRequestDto(request);
     }
 }

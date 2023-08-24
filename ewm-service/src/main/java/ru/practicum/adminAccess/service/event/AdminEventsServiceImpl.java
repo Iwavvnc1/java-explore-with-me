@@ -73,7 +73,6 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                 eventOld.setState(State.CANCELED);
             }
         }
-
         Event updateEvent = updateEventFromUpdateEventAdmin(eventDto,eventOld);
         return toEventDtoFromEvent(updateEvent);
     }
