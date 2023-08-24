@@ -25,7 +25,6 @@ public class NewEventDto {
     @NotBlank
     @Size(min = 20, max = 7000)
     private String description; //Полное описание события
-    @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     @NotNull
@@ -33,7 +32,7 @@ public class NewEventDto {
     private Boolean paid; //Нужно ли оплачивать участие
     private Integer participantLimit; //default: 0. Ограничение на количество участников.
     // Значение 0 - означает отсутствие ограничения
-    private Boolean requestModeration; //default: true. Нужна ли пре-модерация заявок на участие
+    private Boolean requestModeration; //default: true. Нужна ли пре-модерация за
     @NotBlank
     @Size(min = 3, max = 120)
     private String title; //Заголовок

@@ -27,7 +27,7 @@ public class PrivateEventsController {
     @PostMapping
     public ResponseEntity<EventDto> createEvent(@PathVariable Long userId,
                                                 @RequestBody @Valid NewEventDto eventDto) {
-        log.info("Request PEC POST /users/{}/events with dto = {}", userId, eventDto);
+        //log.info("Request PEC POST /users/{}/events with dto = {}", userId, eventDto);
         return new ResponseEntity<>(service.createEvent(userId, eventDto), HttpStatus.CREATED);
     }
 
