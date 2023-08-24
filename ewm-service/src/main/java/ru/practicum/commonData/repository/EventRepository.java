@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.event.Event;
 
@@ -24,28 +25,36 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAllByParams(List<Long> users, List<State> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    @Query("SELECT e " +
-            "FROM Event e " +
-            "WHERE (e.category.id IN ?1 or ?1 is null) " +
-            "AND (e.paid IN ?2  or ?2 is null) " +
-            "AND (e.eventDate BETWEEN COALESCE(?3, e.eventDate) AND COALESCE(?4, e.eventDate)) " +
-            "AND (LOWER(e.annotation) LIKE LOWER(?5)  or ?5 is null) " +
-            "AND (LOWER(e.description) LIKE LOWER(?5)  or ?5 is null) " +
-            "AND e.confirmedRequests <> e.participantLimit " +
-            "AND (e.publishedOn is not null ) ")
-    Page<Event> findAllByPublicParamsAvailable(List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                               LocalDateTime rangeEnd, String text, Pageable pageable);
+    @Query(value = "SELECT e " +
+            "FROM events e " +
+            "WHERE (e.category_id IN :categories or :categories is null) " +
+            "AND (e.paid = :paid or :paid is null) " +
+            "AND (e.event_date BETWEEN COALESCE(:rangeStart, now()) AND COALESCE(:rangeEnd, e.event_date)) " +
+            "AND ((e.annotation) ILIKE :text or :text is null " +
+            "OR (e.description) ILIKE :text or :text is null) " +
+            "AND e.confirmed_requests <> e.participant_limit " +
+            "AND (e.published_on is not null) ", nativeQuery = true)
+    Page<Event> findAllByPublicParamsAvailable(@Param("categories") List<Long> categories,
+                                               @Param("paid") boolean paid,
+                                               @Param("rangeStart") LocalDateTime rangeStart,
+                                               @Param("rangeEnd") LocalDateTime rangeEnd,
+                                               @Param("text") String text,
+                                               Pageable pageable);
 
-    @Query("SELECT e " +
-            "FROM Event e " +
-            "WHERE (e.category.id IN ?1 or ?1 is null) " +
-            "AND (e.paid IN ?2  or ?2 is null) " +
-            "AND (e.eventDate BETWEEN COALESCE(?3, e.eventDate) AND COALESCE(?4, e.eventDate)) " +
-            "AND (LOWER(e.annotation) LIKE LOWER(?5)  or ?5 is null) " +
-            "AND (LOWER(e.description) LIKE LOWER(?5)  or ?5 is null) " +
-            "AND (e.publishedOn IS NOT NULL ) ")
-    Page<Event> findAllByPublicParams(List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                      LocalDateTime rangeEnd, String text, Pageable pageable);
+    @Query(value = "SELECT e " +
+            "FROM events e " +
+            "WHERE (e.category_id IN :categories or :categories is null) " +
+            "AND (e.paid = :paid or :paid is null) " +
+            "AND (e.event_date BETWEEN COALESCE(:rangeStart, now()) AND COALESCE(:rangeEnd, e.event_date)) " +
+            "AND ((e.annotation) ILIKE :text or :text is null " +
+            "OR (e.description) ILIKE :text or :text is null) " +
+            "AND (e.published_on is not null) ", nativeQuery = true)
+    Page<Event> findAllByPublicParams(@Param("categories") List<Long> categories,
+                                      @Param("paid") boolean paid,
+                                      @Param("rangeStart") LocalDateTime rangeStart,
+                                      @Param("rangeEnd") LocalDateTime rangeEnd,
+                                      @Param("text") String text,
+                                      Pageable pageable);
 
     boolean existsByCategoryId(Long id);
 

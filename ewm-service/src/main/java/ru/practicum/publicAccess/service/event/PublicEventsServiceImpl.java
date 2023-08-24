@@ -42,11 +42,11 @@ public class PublicEventsServiceImpl implements PublicEventsService {
             }
         }
         if (param.getOnlyAvailable() != null && param.getOnlyAvailable()) {
-            return eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid(),
+            return eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid().booleanValue(),
                             param.getRangeStart(), param.getRangeEnd(), param.getText(), pageRequest).stream()
                     .map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
         }
-        return eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid(),
+        return eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid().booleanValue(),
                         param.getRangeStart(), param.getRangeEnd(), param.getText(), pageRequest).stream()
                 .map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
     }
