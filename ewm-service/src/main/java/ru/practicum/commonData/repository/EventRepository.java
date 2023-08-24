@@ -36,7 +36,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND e.confirmed_requests <> e.participant_limit " +
             "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParamsAvailable(@Param("categories") List<Long> categories,
-                                               @Param("paid") boolean paid,
+                                               @Param("paid") Boolean paid,
                                                @Param("rangeStart") LocalDateTime rangeStart,
                                                @Param("rangeEnd") LocalDateTime rangeEnd,
                                                @Param("text") String text,
@@ -52,7 +52,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "OR (e.description) ILIKE :text or :text is null) " +
             "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParams(@Param("categories") List<Long> categories,
-                                      @Param("paid") boolean paid,
+                                      @Param("paid") Boolean paid,
                                       @Param("rangeStart") LocalDateTime rangeStart,
                                       @Param("rangeEnd") LocalDateTime rangeEnd,
                                       @Param("text") String text,

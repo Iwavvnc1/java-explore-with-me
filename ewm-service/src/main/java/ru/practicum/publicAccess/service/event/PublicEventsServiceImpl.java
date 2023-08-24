@@ -1,10 +1,12 @@
 package ru.practicum.publicAccess.service.event;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.mapper.event.EventMapper;
@@ -12,8 +14,8 @@ import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 import ru.practicum.commonData.repository.EventRepository;
-import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,16 +35,25 @@ public class PublicEventsServiceImpl implements PublicEventsService {
         if (param.getRangeStart() != null && param.getRangeStart().isAfter(param.getRangeEnd())) {
             throw new NotValidException("");
         }
-        PageRequest pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize(),Sort.by(param.getSort()));
+        PageRequest pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize(), Sort.by(param.getSort()));
+        Page<Event> result;
         if (param.getOnlyAvailable()) {
-            Page<Event> result = eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid(),
-                    param.getRangeStart(), param.getRangeEnd(), param.getText(),
-                    pageRequest);
+            try {
+                result = eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid(),
+                        param.getRangeStart(), param.getRangeEnd(), param.getText(),
+                        pageRequest);
+            } catch (DataIntegrityViolationException e) {
+                throw new NotValidException(e.getMessage(), e);
+            }
             return result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
         }
-        Page<Event> result = eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid(),
-                param.getRangeStart(), param.getRangeEnd(), param.getText(),
-                pageRequest);
+        try {
+            result = eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid(),
+                    param.getRangeStart(), param.getRangeEnd(), param.getText(),
+                    pageRequest);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotValidException(e.getMessage(), e);
+        }
         return result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
     }
 }
