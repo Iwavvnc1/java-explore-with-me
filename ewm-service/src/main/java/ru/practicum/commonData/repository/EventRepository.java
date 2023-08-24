@@ -30,9 +30,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE (e.category_id IN :categories or :categories is null) " +
             "AND (e.paid = :paid or :paid is null) " +
             "AND (e.event_date > COALESCE(:rangeStart, NOW())) " +
-            "AND (e.event_date < :rangeEnd) " +
-            "AND ((e.annotation) ILIKE :text or :text is null " +
-            "OR (e.description) ILIKE :text or :text is null) " +
+            "AND (e.event_date < COALESCE(:rangeEnd, TIMESTAMP '2200-10-19 10:23:54')) " +
+            "AND (e.annotation ILIKE :text or :text is null " +
+            "OR e.description ILIKE :text or :text is null) " +
             "AND e.confirmed_requests <> e.participant_limit " +
             "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParamsAvailable(@Param("categories") List<Long> categories,
@@ -47,9 +47,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE (e.category_id IN :categories or :categories is null) " +
             "AND (e.paid = :paid or :paid is null) " +
             "AND (e.event_date > COALESCE(:rangeStart, NOW())) " +
-            "AND (e.event_date < :rangeEnd) " +
-            "AND ((e.annotation) ILIKE :text or :text is null " +
-            "OR (e.description) ILIKE :text or :text is null) " +
+            "AND (e.event_date < COALESCE(:rangeEnd, TIMESTAMP '2200-10-19 10:23:54')) " +
+            "AND (e.annotation ILIKE :text or :text is null " +
+            "OR e.description ILIKE :text or :text is null) " +
             "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParams(@Param("categories") List<Long> categories,
                                       @Param("paid") Boolean paid,
