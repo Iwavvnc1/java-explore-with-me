@@ -1,12 +1,14 @@
 package ru.practicum.publicAccess.service.event;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.mapper.event.EventMapper;
+import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 import ru.practicum.commonData.repository.EventRepository;
@@ -28,26 +30,19 @@ public class PublicEventsServiceImpl implements PublicEventsService {
 
     @Override
     public List<EventDto> getEvents(PublicEventsParam param) {
-        PageRequest pageRequest;
         if (param.getRangeStart() != null && param.getRangeStart().isAfter(param.getRangeEnd())) {
             throw new NotValidException("");
         }
-        if (param.getSort() == null || param.getSort().isEmpty()) {
-            pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize());
-        } else {
-            if (param.getSort().equals("EVENT_DATE")) {
-                pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize(), Sort.by("eventDate"));
-            } else {
-                pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize(), Sort.by("views"));
-            }
+        PageRequest pageRequest = CustomPageRequest.of(param.getFrom(), param.getSize(),Sort.by(param.getSort()));
+        if (param.getOnlyAvailable()) {
+            Page<Event> result = eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid(),
+                    param.getRangeStart(), param.getRangeEnd(), param.getText(),
+                    pageRequest);
+            return result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
         }
-        if (param.getOnlyAvailable() != null && param.getOnlyAvailable()) {
-            return eventRepository.findAllByPublicParamsAvailable(param.getCategories(), param.getPaid().booleanValue(),
-                            param.getRangeStart(), param.getRangeEnd(), param.getText(), pageRequest).stream()
-                    .map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
-        }
-        return eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid().booleanValue(),
-                        param.getRangeStart(), param.getRangeEnd(), param.getText(), pageRequest).stream()
-                .map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
+        Page<Event> result = eventRepository.findAllByPublicParams(param.getCategories(), param.getPaid(),
+                param.getRangeStart(), param.getRangeEnd(), param.getText(),
+                pageRequest);
+        return result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
     }
 }

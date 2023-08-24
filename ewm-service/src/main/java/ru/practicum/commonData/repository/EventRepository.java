@@ -25,15 +25,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAllByParams(List<Long> users, List<State> states, List<Long> categories,
                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Pageable pageable);
 
-    @Query(value = "SELECT e " +
+    @Query(value = "SELECT * " +
             "FROM events e " +
             "WHERE (e.category_id IN :categories or :categories is null) " +
             "AND (e.paid = :paid or :paid is null) " +
-            "AND (e.event_date BETWEEN COALESCE(:rangeStart, now()) AND COALESCE(:rangeEnd, e.event_date)) " +
+            "AND (e.event_date > COALESCE(:rangeStart, NOW())) " +
+            "AND (e.event_date < :rangeEnd) " +
             "AND ((e.annotation) ILIKE :text or :text is null " +
             "OR (e.description) ILIKE :text or :text is null) " +
             "AND e.confirmed_requests <> e.participant_limit " +
-            "AND (e.published_on is not null) ", nativeQuery = true)
+            "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParamsAvailable(@Param("categories") List<Long> categories,
                                                @Param("paid") boolean paid,
                                                @Param("rangeStart") LocalDateTime rangeStart,
@@ -41,14 +42,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                                @Param("text") String text,
                                                Pageable pageable);
 
-    @Query(value = "SELECT e " +
+    @Query(value = "SELECT * " +
             "FROM events e " +
             "WHERE (e.category_id IN :categories or :categories is null) " +
             "AND (e.paid = :paid or :paid is null) " +
-            "AND (e.event_date BETWEEN COALESCE(:rangeStart, now()) AND COALESCE(:rangeEnd, e.event_date)) " +
+            "AND (e.event_date > COALESCE(:rangeStart, NOW())) " +
+            "AND (e.event_date < :rangeEnd) " +
             "AND ((e.annotation) ILIKE :text or :text is null " +
             "OR (e.description) ILIKE :text or :text is null) " +
-            "AND (e.published_on is not null) ", nativeQuery = true)
+            "AND (e.published_on is not null)", nativeQuery = true)
     Page<Event> findAllByPublicParams(@Param("categories") List<Long> categories,
                                       @Param("paid") boolean paid,
                                       @Param("rangeStart") LocalDateTime rangeStart,
