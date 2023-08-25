@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.adminAccess.service.user.AdminUserServiceImpl;
+import ru.practicum.adminAccess.service.user.AdminUserService;
 import ru.practicum.commonData.model.user.dto.NewUserDto;
 import ru.practicum.commonData.model.user.dto.UserDto;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping(path = "/admin/users")
 public class AdminUserController {
-    private final AdminUserServiceImpl service;
+    private final AdminUserService service;
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid NewUserDto userDto) {
@@ -38,6 +38,6 @@ public class AdminUserController {
                                                   @RequestParam(defaultValue = "0") int from,
                                                   @RequestParam(defaultValue = "10") int size) {
         log.info("Request AUC GET /admin/users with ids = {}, from = {}, size = {}", ids, from, size);
-        return new ResponseEntity<>(service.getUsers(ids, from, size), HttpStatus.OK);
+        return ResponseEntity.ok(service.getUsers(ids, from, size));
     }
 }

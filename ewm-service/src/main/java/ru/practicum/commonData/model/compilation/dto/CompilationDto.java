@@ -13,8 +13,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class CompilationDto {
-    private Set<EventShortDto> events;
     private Long id;
+    private Set<EventShortDto> events;
     private Boolean pinned; //Закреплена ли подборка на главной странице сайта
     private String title; //Заголовок подборки
 }

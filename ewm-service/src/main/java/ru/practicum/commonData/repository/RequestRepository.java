@@ -1,10 +1,12 @@
 package ru.practicum.commonData.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import ru.practicum.commonData.enums.Status;
 import ru.practicum.commonData.model.request.ParticipationRequest;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface RequestRepository extends JpaRepository<ParticipationRequest, Long> {
     Optional<ParticipationRequest> findByIdAndRequesterId(Long requestId, Long userId);
@@ -15,5 +17,7 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     boolean existsByRequesterIdAndEventId(Long userId, Long eventId);
 
-    List<ParticipationRequest> findAllByIdIn(List<Long> requestIds);
+    List<ParticipationRequest> findAllByIdIn(Set<Long> requestIds);
+
+    Integer countAllByEventIdAndStatus(Long id, Status status);
 }

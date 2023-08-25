@@ -41,6 +41,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     @Transactional
     @Override
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
+        Integer confirmedRequests = requestRepository.countAllByEventIdAndStatus(eventId, Status.CONFIRMED);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User not found with id = %s", userId)));
         Event event = eventRepository.findById(eventId)
@@ -54,11 +55,10 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException(String.format("Event with id=%d is not published", eventId));
         }
-        if (event.getParticipantLimit() != 0 && (event.getParticipantLimit().equals(event.getConfirmedRequests()))) {
+        if (event.getParticipantLimit() != 0 && (event.getParticipantLimit().equals(confirmedRequests))) {
             throw new ConflictException(String.format("Event with id=%d has reached participant limit", eventId));
         }
         if (!event.getRequestModeration()) {
-            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
         ParticipationRequest participationRequest;

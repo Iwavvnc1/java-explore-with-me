@@ -1,20 +1,21 @@
 package ru.practicum.exception;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class ApiErrorClient {
     private String message;
     private String reason;
     private String status;
-    private String timestamp;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime timestamp;
 
     public ApiErrorClient(String status, String reason, String message) {
         this.status = status;
         this.reason = reason;
         this.message = message;
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.timestamp = LocalDateTime.now().format(dateTimeFormatter);
+        this.timestamp = LocalDateTime.now();
     }
 
     public String getMessage() {
@@ -29,7 +30,7 @@ public class ApiErrorClient {
         return status;
     }
 
-    public String getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 }

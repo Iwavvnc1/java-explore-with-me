@@ -1,9 +1,6 @@
 package ru.practicum.commonData.model.event;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.category.Category;
 import ru.practicum.commonData.model.location.Location;
@@ -16,19 +13,19 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "events")
 public class Event {
-    private String annotation; //Краткое описание
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Category category;
-    private Integer confirmedRequests; //Количество одобренных заявок на участие в данном событии
-    private LocalDateTime createdOn; //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
-    private String description; //Полное описание события
-    private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String annotation; //Краткое описание
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Category category;
+    private LocalDateTime createdOn; //Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss")
+    private String description; //Полное описание события
+    private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     @ManyToOne(fetch = FetchType.LAZY)
     private User initiator;
     @Embedded
@@ -41,5 +38,4 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private State state; //Список состояний жизненного цикла события
     private String title; //Заголовок
-    private Integer views; //Количество просмотрев события
 }

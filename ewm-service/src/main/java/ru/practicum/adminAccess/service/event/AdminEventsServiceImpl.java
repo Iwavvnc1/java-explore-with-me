@@ -7,7 +7,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.enums.AdminStateAction;
-import ru.practicum.commonData.enums.State;
+import ru.practicum.commonData.enums.Status;
 import ru.practicum.commonData.exceptions.ConflictException;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
@@ -18,10 +18,12 @@ import ru.practicum.commonData.model.event.dto.UpdateEventAdmin;
 import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.customPageRequest.CustomPageRequest;
+import ru.practicum.commonData.repository.RequestRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.commonData.enums.State.*;
 import static ru.practicum.commonData.mapper.event.EventMapper.*;
 
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ import static ru.practicum.commonData.mapper.event.EventMapper.*;
 public class AdminEventsServiceImpl implements AdminEventsService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<EventDto> getEvents(AdminEventsParam requestParam) {
@@ -37,7 +40,13 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         Page<Event> events = eventRepository.findAllByParams(requestParam.getUsers(), requestParam.getStates(),
                         requestParam.getCategories(), requestParam.getRangeStart(), requestParam.getRangeEnd(),
                 pageRequest);
-        return toEventDtoListFromListEvents(events.toList());
+        List<EventDto> result = toEventDtoListFromListEvents(events.toList());
+        result.forEach(eventDto -> {
+            eventDto.setConfirmedRequests(requestRepository
+                    .countAllByEventIdAndStatus(eventDto.getId(), Status.CONFIRMED));
+           // eventDto.setViews(statsService.getViews(eventDto.getId()));
+        });
+        return result;
     }
 
     @Transactional
@@ -46,10 +55,6 @@ public class AdminEventsServiceImpl implements AdminEventsService {
     public EventDto updateEvent(Long eventId, UpdateEventAdmin eventDto) {
         Event eventOld = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Event not found with id = %d", eventId)));
-        if (eventOld.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new NotValidException("Field: eventDate. Error: the date and time for which the event is scheduled" +
-                    " cannot be earlier than one hour from the current moment. Value: " + eventOld.getEventDate());
-        }
         if (eventDto.getEventDate() != null && eventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new NotValidException("Field: eventDate. Error: the date and time for which the event is scheduled" +
                     " cannot be earlier than one hour from the current moment. Value: " + eventDto.getEventDate());
@@ -59,21 +64,21 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                     .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found",
                             eventDto.getCategory()))));
         }
-        if (eventOld.getState().equals(State.PUBLISHED) || eventOld.getState().equals(State.CANCELED)) {
+        if (eventOld.getState().equals(PUBLISHED) || eventOld.getState().equals(CANCELED)) {
             throw new ConflictException(String
                     .format("Cannot publish the event because it's not in the right state: %s", eventOld.getState()));
         } else {
             if (eventDto.getStateAction() != null && eventDto.getStateAction().toString()
                     .equals(AdminStateAction.PUBLISH_EVENT.toString())) {
-                eventOld.setState(State.PUBLISHED);
+                eventOld.setState(PUBLISHED);
                 eventOld.setPublishedOn(LocalDateTime.now());
             }
             if (eventDto.getStateAction() != null && eventDto.getStateAction()
                     .toString().equals(AdminStateAction.REJECT_EVENT.toString())) {
-                eventOld.setState(State.CANCELED);
+                eventOld.setState(CANCELED);
             }
         }
-        Event updateEvent = updateEventFromUpdateEventAdmin(eventDto,eventOld);
+        Event updateEvent = updateEventFromUpdateEventRequest(eventDto,eventOld);
         return toEventDtoFromEvent(updateEvent);
     }
 }

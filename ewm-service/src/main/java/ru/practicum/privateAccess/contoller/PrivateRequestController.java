@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.commonData.model.request.dto.ParticipationRequestDto;
-import ru.practicum.privateAccess.service.request.PrivateRequestServiceImpl;
+import ru.practicum.privateAccess.service.request.PrivateRequestService;
 
 import java.util.List;
 
@@ -16,12 +16,12 @@ import java.util.List;
 @Slf4j
 @RequestMapping(path = "/users/{userId}/requests")
 public class PrivateRequestController {
-    private final PrivateRequestServiceImpl service;
+    private final PrivateRequestService service;
 
     @GetMapping
     public ResponseEntity<List<ParticipationRequestDto>> getRequests(@PathVariable Long userId) {
         log.info("Request PRC GET /users/{}/requests", userId);
-        return new ResponseEntity<>(service.getRequests(userId), HttpStatus.OK);
+        return ResponseEntity.ok(service.getRequests(userId));
     }
 
     @PostMapping
@@ -35,6 +35,6 @@ public class PrivateRequestController {
     public ResponseEntity<ParticipationRequestDto> cancelRequest(@PathVariable Long userId,
                                                                  @PathVariable Long requestId) {
         log.info("Request PRC PATCH /users/{}/requests with requestID = {}", userId, requestId);
-        return new ResponseEntity<>(service.cancelRequest(userId, requestId), HttpStatus.OK);
+        return ResponseEntity.ok(service.cancelRequest(userId, requestId));
     }
 }

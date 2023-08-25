@@ -14,13 +14,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class EventShortDto {
-    private String annotation; //Краткое описание
-    private CategoryDto category;
-    private Integer confirmedRequests; //Количество одобренных заявок на участие в данном событии
-    private LocalDateTime eventDate; //Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss")
     private Long id;
+    private String annotation;
+    private CategoryDto category;
+    private Integer confirmedRequests;
+    private LocalDateTime eventDate;
     private UserShortDto initiator;
-    private Boolean paid; //Нужно ли оплачивать участие
-    private String title; //Заголовок
-    private Integer views; //Количество просмотрев события
+    private Boolean paid;
+    private String title;
+    private Long views;
 }

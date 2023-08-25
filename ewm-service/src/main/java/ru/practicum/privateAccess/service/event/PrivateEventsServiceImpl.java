@@ -25,6 +25,7 @@ import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.practicum.commonData.enums.Status.CONFIRMED;
@@ -51,8 +52,6 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         event.setInitiator(userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id=%d was not found", userId))));
         event.setCreatedOn(LocalDateTime.now());
-        event.setViews(0);
-        event.setConfirmedRequests(0);
         event.setState(State.PENDING);
         try {
             eventRepository.save(event);
@@ -101,7 +100,6 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                     .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found",
                             eventDto.getCategory()))));
         }
-
         if (eventDto.getStateAction() != null && StateAction.CANCEL_REVIEW.toString()
                 .equals(eventDto.getStateAction().toString())) {
             oldEvent.setState(State.CANCELED);
@@ -109,7 +107,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 .equals(eventDto.getStateAction().toString())) {
             oldEvent.setState(State.PENDING);
         }
-        Event updateEvent = updateEventFromUpdateEventUsers(eventDto,oldEvent);
+        Event updateEvent = updateEventFromUpdateEventRequest(eventDto,oldEvent);
         try {
             updateEvent = eventRepository.save(updateEvent);
             eventRepository.flush();
@@ -129,10 +127,10 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         List<ParticipationRequest> confirmedRequests = List.of();
         List<ParticipationRequest> rejectedRequests = List.of();
 
-        List<Long> requestIds = request.getRequestIds();
+        Set<Long> requestIds = request.getRequestIds();
         List<ParticipationRequest> requests = requestRepository.findAllByIdIn(requestIds);
 
-        String status = request.getStatus();
+        String status = request.getStatus().toString();
 
         if (status.equals(REJECTED.toString())) {
             if (status.equals(REJECTED.toString())) {
@@ -147,9 +145,8 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                         .map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList()));
             }
         }
-
         Integer participantLimit = event.getParticipantLimit();
-        Integer approvedRequests = event.getConfirmedRequests();
+        Integer approvedRequests = requestRepository.countAllByEventIdAndStatus(eventId, CONFIRMED);
         int availableParticipants = participantLimit - approvedRequests;
         int potentialParticipants = requestIds.size();
 
@@ -168,7 +165,6 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                                 reques.getId()));
                     }
                 });
-                event.setConfirmedRequests(approvedRequests + potentialParticipants);
             } else {
                 confirmedRequests = requests.stream()
                         .limit(availableParticipants)
@@ -176,10 +172,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 confirmedRequests.forEach(reques -> {
                     if (!reques.getStatus().equals(CONFIRMED)) {
                         reques.setStatus(CONFIRMED);
-                    } /*else {
-                        throw new ConflictException(String.format("Request with id=%d has already been confirmed",
-                                reques.getId()));
-                    }*/
+                    }
                 });
                 rejectedRequests = requests.stream()
                         .skip(availableParticipants)
@@ -189,15 +182,14 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                         reques.setStatus(REJECTED);
                     }
                 });
-                event.setConfirmedRequests(approvedRequests + 1);
             }
         }
         try {
-            eventRepository.save(event);
             requestRepository.saveAll(confirmedRequests);
+            eventRepository.save(event);
             requestRepository.saveAll(rejectedRequests);
-            eventRepository.flush();
             requestRepository.flush();
+            eventRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new NotValidException(e.getMessage());
         }

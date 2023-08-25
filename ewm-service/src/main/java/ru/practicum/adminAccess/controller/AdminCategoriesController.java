@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.adminAccess.service.category.AdminCategoriesServiceImpl;
+import ru.practicum.adminAccess.service.category.AdminCategoriesService;
 import ru.practicum.commonData.model.category.dto.CategoryDto;
 import ru.practicum.commonData.model.category.dto.NewCategoryDto;
 
@@ -17,7 +17,7 @@ import javax.validation.Valid;
 @Slf4j
 @RequestMapping(path = "/admin/categories")
 public class AdminCategoriesController {
-    private final AdminCategoriesServiceImpl service;
+    private final AdminCategoriesService service;
 
 
     @PostMapping
@@ -37,6 +37,6 @@ public class AdminCategoriesController {
     public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long catId,
                                                       @RequestBody @Valid NewCategoryDto categoryDto) {
         log.info("Request ACatC PATCH /admin/categories/{} with dto = {}", catId, categoryDto);
-        return new ResponseEntity<>(service.update(catId, categoryDto), HttpStatus.OK);
+        return ResponseEntity.ok(service.update(catId, categoryDto));
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.adminAccess.service.compilation.AdminCompilationsServiceImpl;
+import ru.practicum.adminAccess.service.compilation.AdminCompilationsService;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.model.compilation.dto.NewCompilationDto;
 import ru.practicum.commonData.model.compilation.dto.UpdateCompilationDto;
@@ -18,11 +18,11 @@ import javax.validation.Valid;
 @Slf4j
 @RequestMapping(path = "/admin/compilations")
 public class AdminCompilationsController {
-    private final AdminCompilationsServiceImpl service;
+    private final AdminCompilationsService service;
 
     @PostMapping
     public ResponseEntity<CompilationDto> createCompilation(@RequestBody @Valid NewCompilationDto compilationDto) {
-        //log.info("Request ACompC POST /admin/compilations with dto = {}", compilationDto);
+        log.info("Request ACompC POST /admin/compilations with dto = {}", compilationDto);
         return new ResponseEntity<>(service.createCompilation(compilationDto), HttpStatus.CREATED);
     }
 
@@ -37,6 +37,6 @@ public class AdminCompilationsController {
     public ResponseEntity<CompilationDto> updateCompilation(@PathVariable Long compId,
                                                             @RequestBody @Valid UpdateCompilationDto compilationDto) {
         log.info("Request ACompC PATCH /admin/compilations/{} with dto = {}", compId, compilationDto);
-        return new ResponseEntity<>(service.updateCompilation(compId, compilationDto), HttpStatus.OK);
+        return ResponseEntity.ok(service.updateCompilation(compId, compilationDto));
     }
 }

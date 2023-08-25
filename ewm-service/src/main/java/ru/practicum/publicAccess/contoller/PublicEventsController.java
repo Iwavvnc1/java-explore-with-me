@@ -2,9 +2,7 @@ package ru.practicum.publicAccess.contoller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -12,12 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.practicum.client.StatClient;
+import ru.practicum.commonData.statsServiceApi.StatsServiceApi;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 
-import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.publicAccess.service.event.PublicEventsServiceImpl;
+import ru.practicum.publicAccess.service.event.PublicEventsService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
@@ -31,11 +28,9 @@ import java.util.List;
 @RequestMapping(path = "/events")
 @Validated
 public class PublicEventsController {
-    private final PublicEventsServiceImpl service;
-    private final StatClient statClient;
+    private final PublicEventsService service;
+    private final StatsServiceApi statService;
 
-    @Value("${ewm.service.name}")
-    private String appServiceName;
 
     @GetMapping
     public ResponseEntity<List<EventDto>> getEvents(@RequestParam(required = false) String text,
@@ -64,25 +59,15 @@ public class PublicEventsController {
                 .size(size)
                 .build();
         log.info("Request PubEC GET /events with param = {}", param);
-        saveStatistic(request);
-        return new ResponseEntity<>(service.getEvents(param), HttpStatus.OK);
+        statService.saveStatistic(request);
+        return ResponseEntity.ok(service.getEvents(param));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable Long id,
                                                  HttpServletRequest request) {
         log.info("Request PubEC GET /events/{}", id);
-        saveStatistic(request);
-        return new ResponseEntity<>(service.getEventById(id), HttpStatus.OK);
-    }
-
-    private void saveStatistic(HttpServletRequest request) {
-        EndpointHitDto hitDto = EndpointHitDto.builder()
-                .app(appServiceName)
-                .ip(request.getRemoteAddr())
-                .uri(request.getRequestURI())
-                .timestamp(LocalDateTime.now())
-                .build();
-        statClient.saveStats(hitDto);
+        statService.saveStatistic(request);
+        return ResponseEntity.ok(service.getEventById(id));
     }
 }

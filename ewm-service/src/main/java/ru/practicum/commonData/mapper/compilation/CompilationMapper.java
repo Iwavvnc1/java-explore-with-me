@@ -35,7 +35,8 @@ public class CompilationMapper {
         return Compilation.builder()
                 .id(compilation.getId())
                 .events(compilation.getEvents())
-                .title(compilationDto.getTitle() != null ? compilationDto.getTitle() : compilation.getTitle())
+                .title(compilationDto.getTitle()  != null  && !compilationDto.getTitle().isBlank()
+                        ? compilationDto.getTitle() : compilation.getTitle())
                 .pinned(compilationDto.getPinned() != null ? compilationDto.getPinned() : compilation.getPinned())
                 .build();
     }

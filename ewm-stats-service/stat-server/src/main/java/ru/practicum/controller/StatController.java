@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.model.ViewStats;
+import ru.practicum.dto.ViewStatDto;
 import ru.practicum.service.StatService;
 
 import java.time.LocalDateTime;
@@ -30,12 +30,14 @@ public class StatController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<List<ViewStats>> getStatistic(@RequestParam
-                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
-                                                        @RequestParam
-                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-                                                        @RequestParam(required = false) List<String> uris,
-                                                        @RequestParam(defaultValue = "false") Boolean unique) {
+    public ResponseEntity<List<ViewStatDto>> getStatistic(@RequestParam
+                                                              @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                              LocalDateTime start,
+                                                          @RequestParam
+                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                          LocalDateTime end,
+                                                          @RequestParam(required = false) List<String> uris,
+                                                          @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("get Statistic");
         return ResponseEntity.ok().body(statService.getStatistic(start, end, uris, unique));
     }
