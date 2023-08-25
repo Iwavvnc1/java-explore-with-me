@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.commonData.statsServiceApi.StatsServiceApi;
 import ru.practicum.commonData.customPageRequest.CustomPageRequest;
-import ru.practicum.commonData.enums.Status;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.mapper.event.EventMapper;
@@ -32,7 +31,7 @@ public class PublicEventsServiceImpl implements PublicEventsService {
     public EventDto getEventById(Long id) {
         EventDto eventDto = EventMapper.toEventDtoFromEventViews(eventRepository.findByIdAndPublishedOn(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", id))));
-        eventDto.setConfirmedRequests(requestRepository.countAllByEventIdAndStatus(id, Status.CONFIRMED));
+       // eventDto.setConfirmedRequests(requestRepository.countAllByEventIdAndStatus(id, Status.CONFIRMED));
         eventDto.setViews(statsService.getViews(id));
         return eventDto;
     }

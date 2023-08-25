@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.enums.AdminStateAction;
-import ru.practicum.commonData.enums.Status;
 import ru.practicum.commonData.exceptions.ConflictException;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
@@ -15,12 +14,15 @@ import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.UpdateEventAdmin;
+import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
 import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 import ru.practicum.commonData.repository.RequestRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static ru.practicum.commonData.enums.State.*;
@@ -41,9 +43,14 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                         requestParam.getCategories(), requestParam.getRangeStart(), requestParam.getRangeEnd(),
                 pageRequest);
         List<EventDto> result = toEventDtoListFromListEvents(events.toList());
+        List<Long> eventIds = new ArrayList<>();
+        result.forEach(eventDto -> eventIds.add(eventDto.getId()));
+        List<ConfirmedRequest> requests = requestRepository.findConfirmedRequest(eventIds);
+        HashMap<Long,Long> confirmedRequests = new HashMap<>();
+        requests.forEach(confirmedRequest -> confirmedRequests
+                .put(confirmedRequest.getEventId(), confirmedRequest.getCount()));
         result.forEach(eventDto -> {
-            eventDto.setConfirmedRequests(requestRepository
-                    .countAllByEventIdAndStatus(eventDto.getId(), Status.CONFIRMED));
+            eventDto.setConfirmedRequests(confirmedRequests.get(eventDto.getId()));
            // eventDto.setViews(statsService.getViews(eventDto.getId()));
         });
         return result;
