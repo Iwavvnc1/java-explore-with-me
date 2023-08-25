@@ -19,6 +19,7 @@ import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.customPageRequest.CustomPageRequest;
 import ru.practicum.commonData.repository.RequestRepository;
+import ru.practicum.commonData.statsServiceApi.StatsServiceApi;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final StatsServiceApi statsService;
 
     @Override
     public List<EventDto> getEvents(AdminEventsParam requestParam) {
@@ -49,10 +51,17 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         HashMap<Long,Long> confirmedRequests = new HashMap<>();
         requests.forEach(confirmedRequest -> confirmedRequests
                 .put(confirmedRequest.getEventId(), confirmedRequest.getCount()));
-        result.forEach(eventDto -> {
-            eventDto.setConfirmedRequests(confirmedRequests.get(eventDto.getId()));
-           // eventDto.setViews(statsService.getViews(eventDto.getId()));
-        });
+        if (requests.isEmpty()) {
+            result.forEach(eventDto -> {
+                eventDto.setConfirmedRequests(0L);
+                eventDto.setViews(statsService.getViews(eventDto.getId()));
+            });
+        } else {
+            result.forEach(eventDto -> {
+                eventDto.setConfirmedRequests(confirmedRequests.get(eventDto.getId()));
+                eventDto.setViews(statsService.getViews(eventDto.getId()));
+            });
+        }
         return result;
     }
 

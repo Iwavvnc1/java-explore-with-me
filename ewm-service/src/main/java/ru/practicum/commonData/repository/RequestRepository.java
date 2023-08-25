@@ -22,9 +22,9 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     List<ParticipationRequest> findAllByIdIn(Set<Long> requestIds);
 
-    @Query("select new ru.practicum.commonData.model.request.dto.ConfirmedRequest(r.event.id,COUNT(distinct r.id)) " +
+    @Query("select new ru.practicum.commonData.model.request.dto.ConfirmedRequest(r.event.id,COUNT(distinct r)) " +
             "FROM ParticipationRequest r " +
-            "where r.status = 'CONFIRMED' and r.id IN :eventsIds group by r.event.id")
+            "where r.status = 'CONFIRMED' and r.event.id IN :eventsIds group by r.event.id")
     List<ConfirmedRequest> findConfirmedRequest(@Param("eventsIds") List<Long> eventsIds);
 
     Integer countAllByEventIdAndStatus(Long id, Status status);
