@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.commonData.customValidator.ValidationTime;
+import ru.practicum.commonData.utils.FormatDate;
+import ru.practicum.commonData.utils.customValidator.ValidationTime;
 import ru.practicum.commonData.model.location.dto.LocationDto;
 
 import javax.validation.Valid;
@@ -28,7 +29,7 @@ public class NewEventDto {
     @NotBlank
     @Size(min = 20, max = 7000)
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FormatDate.TIME_FORMAT)
     @ValidationTime
     private LocalDateTime eventDate;
     @NotNull

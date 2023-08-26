@@ -1,4 +1,4 @@
-package ru.practicum.commonData.customPageRequest;
+package ru.practicum.commonData.utils.customPageRequest;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

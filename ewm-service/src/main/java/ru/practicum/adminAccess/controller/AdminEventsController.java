@@ -12,6 +12,7 @@ import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.model.event.dto.AdminEventsParam;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.UpdateEventAdmin;
+import ru.practicum.commonData.utils.FormatDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -32,10 +33,10 @@ public class AdminEventsController {
                                                     @RequestParam(required = false) List<State> states,
                                                     @RequestParam(required = false) List<Long> categories,
                                                     @RequestParam(required = false)
-                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                     LocalDateTime rangeStart,
                                                     @RequestParam(required = false)
-                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                     LocalDateTime rangeEnd,
                                                     @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                     @RequestParam(defaultValue = "10") @Positive Integer size) {

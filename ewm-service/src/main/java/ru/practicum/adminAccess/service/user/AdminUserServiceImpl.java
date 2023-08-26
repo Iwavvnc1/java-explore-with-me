@@ -10,7 +10,7 @@ import ru.practicum.commonData.model.user.User;
 import ru.practicum.commonData.model.user.dto.NewUserDto;
 import ru.practicum.commonData.model.user.dto.UserDto;
 import ru.practicum.commonData.repository.UserRepository;
-import ru.practicum.commonData.customPageRequest.CustomPageRequest;
+import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
 
 import java.util.List;
 

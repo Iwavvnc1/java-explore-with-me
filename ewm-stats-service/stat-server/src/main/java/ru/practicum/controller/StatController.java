@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatDto;
+import ru.practicum.model.FormatDate;
 import ru.practicum.service.StatService;
 
 import java.time.LocalDateTime;
@@ -31,10 +32,10 @@ public class StatController {
 
     @GetMapping("/stats")
     public ResponseEntity<List<ViewStatDto>> getStatistic(@RequestParam
-                                                              @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                              @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                               LocalDateTime start,
                                                           @RequestParam
-                                                        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                        @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                           LocalDateTime end,
                                                           @RequestParam(required = false) List<String> uris,
                                                           @RequestParam(defaultValue = "false") Boolean unique) {

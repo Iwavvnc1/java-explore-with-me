@@ -1,4 +1,4 @@
-package ru.practicum.commonData.customValidator;
+package ru.practicum.commonData.utils.customValidator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

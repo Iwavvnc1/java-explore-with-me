@@ -6,7 +6,7 @@ import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.mapper.compilation.CompilationMapper;
 import ru.practicum.commonData.model.compilation.dto.CompilationDto;
 import ru.practicum.commonData.repository.CompilationRepository;
-import ru.practicum.commonData.customPageRequest.CustomPageRequest;
+import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
 
 import java.util.List;
 import java.util.stream.Collectors;

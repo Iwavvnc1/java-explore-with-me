@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.enums.StateAction;
 import ru.practicum.commonData.exceptions.ConflictException;
@@ -20,7 +21,8 @@ import ru.practicum.commonData.repository.CategoryRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.repository.RequestRepository;
 import ru.practicum.commonData.repository.UserRepository;
-import ru.practicum.commonData.customPageRequest.CustomPageRequest;
+import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
+import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
+    private final RequestManager requestManager;
+    private final StatsServiceApi statsService;
 
     @Transactional
     @Override
@@ -63,15 +67,21 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     }
 
     public List<EventShortDto> getEventsCurrentUser(Long userId, int from, int size) {
-        return toEventShortDtoListFromListEvents(eventRepository
-                .findAllByInitiatorId(userId, CustomPageRequest.of(from, size)).toList());
+        List<EventDto> eventDtos = eventRepository
+                .findAllByInitiatorId(userId, CustomPageRequest.of(from, size)).stream()
+                .map(EventMapper::toEventDtoFromEvent)
+                .collect(Collectors.toList());
+        eventDtos = requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos));
+        return toEventShortDtoListFromListEventDtos(eventDtos);
+
     }
 
     @Override
     public EventDto getEventById(Long userId, Long eventId) {
-        return toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId, userId)
+        EventDto eventDto = toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Event not found with id = %d and userId = %d", eventId, userId))));
+        return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto));
     }
 
     @Override

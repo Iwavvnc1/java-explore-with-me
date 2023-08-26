@@ -9,6 +9,7 @@ import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.event.dto.*;
 import ru.practicum.commonData.model.location.Location;
 import ru.practicum.commonData.model.user.User;
+import ru.practicum.commonData.model.user.dto.UserShortDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,6 +89,20 @@ public class EventMapper {
                 .build();
     }
 
+    public EventShortDto toEventShortDtoFromEventDto(EventDto event) {
+        return EventShortDto.builder()
+                .annotation(event.getAnnotation())
+                .category(event.getCategory())
+                .eventDate(event.getEventDate())
+                .id(event.getId())
+                .initiator(new UserShortDto(event.getInitiator().getId(),event.getInitiator().getName()))
+                .paid(event.getPaid())
+                .title(event.getTitle())
+                .confirmedRequests(event.getConfirmedRequests())
+                .views(event.getViews())
+                .build();
+    }
+
     public Event updateEventFromUpdateEventRequest(UpdateEventRequest dto, Event event) {
         event.setCategory(Hibernate.unproxy(event.getCategory(), Category.class));
         event.setInitiator(Hibernate.unproxy(event.getInitiator(), User.class));
@@ -120,5 +135,9 @@ public class EventMapper {
 
     public List<EventShortDto> toEventShortDtoListFromListEvents(List<Event> events) {
         return events.stream().map(EventMapper::toEventShortDtoFromEvent).collect(Collectors.toList());
+    }
+
+    public List<EventShortDto> toEventShortDtoListFromListEventDtos(List<EventDto> events) {
+        return events.stream().map(EventMapper::toEventShortDtoFromEventDto).collect(Collectors.toList());
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.commonData.model.location.dto.LocationDto;
+import ru.practicum.commonData.utils.FormatDate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
@@ -18,7 +19,7 @@ public class UpdateEventRequest {
     private Long category;
     @Size(min = 20, max = 7000)
     private String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = FormatDate.TIME_FORMAT)
     private LocalDateTime eventDate;
     @Valid
     private LocationDto location;

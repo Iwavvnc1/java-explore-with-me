@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.practicum.commonData.statsServiceApi.StatsServiceApi;
+import ru.practicum.commonData.utils.FormatDate;
+import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
 import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 
@@ -37,10 +38,10 @@ public class PublicEventsController {
                                                     @RequestParam(required = false) List<Long> categories,
                                                     @RequestParam(required = false) Boolean paid,
                                                     @RequestParam(required = false)
-                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                     LocalDateTime rangeStart,
                                                     @RequestParam(required = false)
-                                                    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+                                                    @DateTimeFormat(pattern = FormatDate.TIME_FORMAT)
                                                     LocalDateTime rangeEnd,
                                                     @RequestParam(defaultValue = "false") Boolean onlyAvailable,
                                                     @RequestParam(defaultValue = "EVENT_DATE") String sort,

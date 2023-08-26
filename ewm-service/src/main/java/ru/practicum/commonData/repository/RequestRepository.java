@@ -24,8 +24,13 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, L
 
     @Query("select new ru.practicum.commonData.model.request.dto.ConfirmedRequest(r.event.id,COUNT(distinct r)) " +
             "FROM ParticipationRequest r " +
-            "where r.status = 'CONFIRMED' and r.event.id IN :eventsIds group by r.event.id")
-    List<ConfirmedRequest> findConfirmedRequest(@Param("eventsIds") List<Long> eventsIds);
+            "where r.status = 'CONFIRMED' and r.event.id IN :eventIds group by r.event.id")
+    List<ConfirmedRequest> findConfirmedRequests(@Param("eventIds") List<Long> eventIds);
+
+    @Query("select new ru.practicum.commonData.model.request.dto.ConfirmedRequest(r.event.id,COUNT(distinct r)) " +
+            "FROM ParticipationRequest r " +
+            "where r.status = 'CONFIRMED' and r.event.id = :eventId group by r.event.id")
+    Optional<ConfirmedRequest> findConfirmedRequest(@Param("eventId") Long eventId);
 
     Integer countAllByEventIdAndStatus(Long id, Status status);
 }

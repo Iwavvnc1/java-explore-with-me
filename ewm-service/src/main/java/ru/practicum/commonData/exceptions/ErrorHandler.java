@@ -10,29 +10,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
-import java.util.Objects;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler({ConflictException.class, ConditionsNotMatch.class})
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleForbiddenException(final ConflictException e) {
+    public ApiError handleForbiddenException(final RuntimeException e) {
         log.debug("Получен статус {} {}", HttpStatus.CONFLICT, e.getMessage(),e);
         return new ApiError(
                 HttpStatus.CONFLICT.toString(),
                 "Integrity constraint has been violated.",
-                e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleForbiddenException(final ConditionsNotMatch e) {
-        log.debug("Получен статус {} {}", HttpStatus.CONFLICT, e.getMessage(),e);
-        return new ApiError(
-                HttpStatus.CONFLICT.toString(),
-                "For the requested operation the conditions are not met.",
                 e.getMessage());
     }
 
@@ -46,20 +35,11 @@ public class ErrorHandler {
                 e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleBlankException(final MethodArgumentNotValidException e) {
-        log.debug("Получен статус {} {}", HttpStatus.BAD_REQUEST, e.getMessage(),e);
-        String field = Objects.requireNonNull(e.getFieldError()).getField();
-        return new ApiError(
-                HttpStatus.BAD_REQUEST.toString(),
-                "Incorrectly made request.",
-                String.format("Field: %s. Error: must not be blank. Value: %s", field, e.getFieldValue(field)));
-    }
 
-    @ExceptionHandler
+    @ExceptionHandler({ConstraintViolationException.class, NotValidException.class, ValidationException.class,
+            MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleonstraintViolationException(final ConstraintViolationException e) {
+    public ApiError handleonstraintViolationException(final Exception e) {
         log.debug("Получен статус {} {}", HttpStatus.BAD_REQUEST, e.getMessage(),e);
         return new ApiError(
                 HttpStatus.BAD_REQUEST.toString(),
@@ -67,35 +47,6 @@ public class ErrorHandler {
                 e.getMessage());
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleonstraintValidException(final NotValidException e) {
-        log.debug("Получен статус {} {}", HttpStatus.BAD_REQUEST, e.getMessage(),e);
-        return new ApiError(
-                HttpStatus.BAD_REQUEST.toString(),
-                "Incorrectly made request.",
-                e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleonstraintValidParamException(final MissingServletRequestParameterException e) {
-        log.debug("Получен статус {} {}", HttpStatus.BAD_REQUEST, e.getMessage(),e);
-        return new ApiError(
-                HttpStatus.BAD_REQUEST.toString(),
-                "Incorrectly made request.",
-                e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleonstraintValidationException(final ValidationException e) {
-        log.debug("Получен статус {} {}", HttpStatus.BAD_REQUEST, e.getMessage(),e);
-        return new ApiError(
-                HttpStatus.BAD_REQUEST.toString(),
-                "Incorrectly made request.",
-                e.getMessage());
-    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
