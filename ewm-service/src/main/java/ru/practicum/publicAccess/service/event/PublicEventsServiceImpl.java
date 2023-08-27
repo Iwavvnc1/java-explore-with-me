@@ -6,7 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.commonData.model.comment.Comment;
+import ru.practicum.commonData.model.comment.dto.CommentDto;
+import ru.practicum.commonData.model.comment.dto.CommentEvent;
 import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
+import ru.practicum.commonData.repository.CommentsRepository;
 import ru.practicum.commonData.repository.RequestRepository;
 import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
@@ -20,7 +24,10 @@ import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 import ru.practicum.commonData.repository.EventRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static ru.practicum.commonData.mapper.comment.CommentMapper.*;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +36,7 @@ public class PublicEventsServiceImpl implements PublicEventsService {
     private final RequestManager requestManager;
     private final StatsServiceApi statsService;
     private final RequestRepository requestRepository;
+    private final CommentsRepository commentsRepository;
 
     @Override
     public EventDto getEventById(Long id) {
@@ -36,6 +44,8 @@ public class PublicEventsServiceImpl implements PublicEventsService {
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", id))));
         ConfirmedRequest request = requestRepository.findConfirmedRequest(eventDto.getId())
                 .orElse(new ConfirmedRequest(0L,0L));
+        List<CommentDto> commentDto = toCommentDtoList(commentsRepository.findAllByEventIdAndDeleteStatusIsFalse(id));
+        eventDto.setComment(commentDto);
         return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto), request);
     }
 
@@ -67,6 +77,12 @@ public class PublicEventsServiceImpl implements PublicEventsService {
         }
         List<EventDto> eventDtos = result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
         List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
+        List<CommentEvent> commentDto = commentsRepository.findAllForEvent(eventIds);
+        Map<Long, List<Comment>> comments = commentDto.stream()
+                .collect(Collectors.toMap(CommentEvent::getEventId,CommentEvent::getComments));
+        eventDtos.forEach(eventDto -> {
+            eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId())));
+        });
         List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
         return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos),requests);
     }
