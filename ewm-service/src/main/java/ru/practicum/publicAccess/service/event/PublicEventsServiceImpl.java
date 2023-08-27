@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
+import ru.practicum.commonData.repository.RequestRepository;
 import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
 import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
@@ -26,12 +28,15 @@ public class PublicEventsServiceImpl implements PublicEventsService {
     private final EventRepository eventRepository;
     private final RequestManager requestManager;
     private final StatsServiceApi statsService;
+    private final RequestRepository requestRepository;
 
     @Override
     public EventDto getEventById(Long id) {
         EventDto eventDto = EventMapper.toEventDtoFromEventViews(eventRepository.findByIdAndPublishedOn(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Event with id=%d was not found", id))));
-        return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto));
+        ConfirmedRequest request = requestRepository.findConfirmedRequest(eventDto.getId())
+                .orElse(new ConfirmedRequest(0L,0L));
+        return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto), request);
     }
 
     @Override
@@ -61,6 +66,8 @@ public class PublicEventsServiceImpl implements PublicEventsService {
             throw new NotValidException(e.getMessage(), e);
         }
         List<EventDto> eventDtos = result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
-        return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos));
+        List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
+        List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
+        return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos),requests);
     }
 }

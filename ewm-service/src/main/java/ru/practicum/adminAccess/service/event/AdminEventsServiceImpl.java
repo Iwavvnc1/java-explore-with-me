@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
+import ru.practicum.commonData.repository.RequestRepository;
 import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.enums.AdminStateAction;
 import ru.practicum.commonData.exceptions.ConflictException;
@@ -33,6 +35,7 @@ public class AdminEventsServiceImpl implements AdminEventsService {
     private final CategoryRepository categoryRepository;
     private final RequestManager requestManager;
     private final StatsServiceApi statsService;
+    private final RequestRepository requestRepository;
 
     @Override
     public List<EventDto> getEvents(AdminEventsParam requestParam) {
@@ -42,7 +45,9 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                         requestParam.getCategories(), requestParam.getRangeStart(), requestParam.getRangeEnd(),
                 pageRequest);
         List<EventDto> result = toEventDtoListFromListEvents(events.toList());
-        return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(result));
+        List<Long> eventIds = requestManager.getIdsForRequest(result);
+        List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
+        return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(result), requests);
     }
 
     @Transactional

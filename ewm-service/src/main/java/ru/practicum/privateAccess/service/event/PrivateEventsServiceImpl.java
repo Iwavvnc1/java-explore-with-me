@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
 import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.enums.StateAction;
@@ -71,7 +72,10 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 .findAllByInitiatorId(userId, CustomPageRequest.of(from, size)).stream()
                 .map(EventMapper::toEventDtoFromEvent)
                 .collect(Collectors.toList());
-        eventDtos = requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos));
+        List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
+        List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
+        eventDtos = requestManager
+                .getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos),requests);
         return toEventShortDtoListFromListEventDtos(eventDtos);
 
     }
@@ -81,7 +85,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         EventDto eventDto = toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Event not found with id = %d and userId = %d", eventId, userId))));
-        return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto));
+        ConfirmedRequest request = requestRepository.findConfirmedRequest(eventDto.getId())
+                .orElse(new ConfirmedRequest(0L,0L));
+        return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto),request);
     }
 
     @Override
