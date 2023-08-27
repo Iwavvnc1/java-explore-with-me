@@ -4,6 +4,9 @@ package ru.practicum.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStatDto;
+import ru.practicum.exception.NotValidException;
+import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.ViewStats;
 import ru.practicum.repository.StatRepository;
 
@@ -23,13 +26,16 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public List<ViewStats> getStatistic(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<ViewStatDto> getStatistic(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         List<ViewStats> viewStats;
+                if (end.isBefore(start)) {
+            throw new NotValidException("no valid time");
+        }
         if (unique) {
             viewStats = statRepository.getAllByTimeGroup(start, end, uris);
         } else {
             viewStats = statRepository.getAllByTime(start, end, uris);
         }
-        return viewStats;
+        return ViewStatsMapper.toDtoList(viewStats);
     }
 }

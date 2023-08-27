@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true)
-@Getter
+@Builder
 @Table(name = "EndpointHit")
 public class EndpointHit {
     @Id
