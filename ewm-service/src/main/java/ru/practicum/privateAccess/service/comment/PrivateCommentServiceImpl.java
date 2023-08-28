@@ -3,6 +3,7 @@ package ru.practicum.privateAccess.service.comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.exceptions.NotFoundException;
 import ru.practicum.commonData.exceptions.NotValidException;
 import ru.practicum.commonData.model.comment.Comment;
@@ -12,9 +13,11 @@ import ru.practicum.commonData.repository.CommentsRepository;
 import ru.practicum.commonData.repository.EventRepository;
 import ru.practicum.commonData.repository.UserRepository;
 
+
 import java.util.List;
 
 import static ru.practicum.commonData.mapper.comment.CommentMapper.*;
+
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +26,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
 
+    @Transactional
     @Override
     public CommentDto createComment(Long userId, Long eventId, NewCommentDto commentDto) {
 
@@ -40,6 +44,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         return toCommentDtoFromComment(comment);
     }
 
+    @Transactional
     @Override
     public CommentDto updateComment(Long userId, Long commId, NewCommentDto commentDto) {
         checkUser(userId);
@@ -55,6 +60,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         return toCommentDtoFromComment(comment);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentDto> getAllByUser(Long userId) {
         checkUser(userId);
@@ -62,6 +68,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         return toCommentDtoList(comments);
     }
 
+    @Transactional
     @Override
     public void deleteComment(Long userId, Long commId) {
         Comment comment = checkAndGetComment(userId,commId);
@@ -74,6 +81,7 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
         }
     }
 
+    @Transactional
     @Override
     public void addLike(Long userId, Long commId) {
         checkUser(userId);
@@ -94,10 +102,9 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
                 .orElseThrow(() -> new NotFoundException(String.format("Comment not found with id = %d", commId)));
         if (comment.getAuthor().getId().equals(userId)) {
             return comment;
-        } else {
+        }
             throw new NotFoundException(String
                     .format("Comment not found with id = %d, with userId = %d", commId, userId));
-        }
     }
 
     private void checkUser(Long userId) {

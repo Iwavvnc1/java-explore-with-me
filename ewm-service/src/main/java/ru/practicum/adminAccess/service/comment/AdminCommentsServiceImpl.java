@@ -18,6 +18,7 @@ import static ru.practicum.commonData.mapper.comment.CommentMapper.*;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class AdminCommentsServiceImpl implements AdminCommentsService {
     private final CommentsRepository commentsRepository;
     private final UserRepository userRepository;
@@ -37,6 +38,7 @@ public class AdminCommentsServiceImpl implements AdminCommentsService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentDto> getAllByUser(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -45,6 +47,7 @@ public class AdminCommentsServiceImpl implements AdminCommentsService {
         return toCommentDtoList(commentsRepository.findAllByAuthorIdAndDeleteStatusIsFalse(userId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentDto> getAllByEvent(Long eventId) {
         if (!eventRepository.existsById(eventId)) {

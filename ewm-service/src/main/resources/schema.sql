@@ -86,3 +86,6 @@ CREATE TABLE IF NOT EXISTS comments
     FOREIGN KEY (author_id)
         REFERENCES users (id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_comments_author_id ON comments(author_id);
+CREATE INDEX idx_comments_event_id ON comments(event_id);

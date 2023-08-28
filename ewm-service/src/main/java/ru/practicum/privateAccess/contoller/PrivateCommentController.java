@@ -24,7 +24,7 @@ public class PrivateCommentController {
     public ResponseEntity<CommentDto> createComment(@PathVariable Long userId, @PathVariable Long eventId,
                                                     @RequestBody @Valid NewCommentDto commentDto) {
         log.info("Request PCommC POST /users/{}/comments/events/{}", userId, eventId);
-        return ResponseEntity.ok(service.createComment(userId, eventId, commentDto));
+        return new ResponseEntity<>(service.createComment(userId, eventId, commentDto),HttpStatus.CREATED);
     }
 
     @PutMapping ("/{commId}/like")
