@@ -20,7 +20,7 @@ public class AdminCommentController {
 
     @DeleteMapping("/{commId}")
     public ResponseEntity deleteComment(@PathVariable Long commId) {
-        service.deleteCategory(commId);
+        service.deleteComment(commId);
         log.info("Request ACommC DELETE /admin/comments/{}", commId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

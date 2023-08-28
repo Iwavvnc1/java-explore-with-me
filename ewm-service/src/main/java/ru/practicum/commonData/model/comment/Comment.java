@@ -1,6 +1,7 @@
 package ru.practicum.commonData.model.comment;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.user.User;
 
@@ -22,6 +23,7 @@ public class Comment {
     private Event event;
     private String text;
     private Boolean deleteStatus;
+    @CreationTimestamp
     private LocalDateTime createdOn;
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;
