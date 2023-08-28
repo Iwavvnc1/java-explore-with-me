@@ -79,7 +79,7 @@ public class PublicEventsServiceImpl implements PublicEventsService {
         List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
         List<CommentEvent> commentDto = commentsRepository.findAllForEvent(eventIds);
         Map<Long, List<Comment>> comments = commentDto.stream()
-                .collect(Collectors.toMap(CommentEvent::getEventId,CommentEvent::getComments));
+                .collect(Collectors.toMap(CommentEvent::getEventId,CommentEvent::getComment));
         eventDtos.forEach(eventDto -> {
             eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId())));
         });

@@ -76,7 +76,9 @@ public class PrivateCommentServiceImpl implements PrivateCommentService {
 
     @Override
     public void addLike(Long userId, Long commId) {
-        Comment comment = checkAndGetComment(userId,commId);
+        checkUser(userId);
+        Comment comment = commentsRepository.findById(commId)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment not found with id = %d", commId)));
         comment.setLikes(comment.getLikes() + 1L);
         try {
             commentsRepository.save(comment);

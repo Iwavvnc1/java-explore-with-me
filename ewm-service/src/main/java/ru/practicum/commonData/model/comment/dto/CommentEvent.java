@@ -12,10 +12,10 @@ import java.util.List;
 @Builder
 public class CommentEvent {
     Long eventId;
-    List<Comment> comments;
+    List<Comment> comment;
 
-    public CommentEvent(Long eventId, List<Comment> comments) {
+    public CommentEvent(Long eventId, List<Comment> comment) {
         this.eventId = eventId;
-        this.comments = comments;
+        this.comment = comment;
     }
 }

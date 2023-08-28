@@ -13,9 +13,11 @@ public interface CommentsRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findAllByEventIdAndDeleteStatusIsFalse(Long eventId);
 
-   @Query("select new ru.practicum.commonData.model.comment.dto.CommentEvent(c.event.id, " +
-           "(select co from Comment co where co.deleteStatus = false and co.event.id = c.event.id)) " +
-           "from Comment c " +
-           "where c.deleteStatus = false and c.event.id in :eventIds ")
+    @Query(value = "SELECT c.event_id AS eventId, " +
+            "(SELECT co FROM comments co WHERE co.delete_status = false AND co.event_id = c.event_id) AS comment " +
+            "FROM comments c " +
+            "WHERE c.delete_status = false AND c.event_id IN :eventIds " +
+            "GROUP BY c.event_id", nativeQuery = true)
     List<CommentEvent> findAllForEvent(@Param("eventIds") List<Long> eventIds);
+
 }
