@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commonData.model.comment.Comment;
-import ru.practicum.commonData.model.comment.dto.CommentEvent;
 import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
 import ru.practicum.commonData.repository.CommentsRepository;
 import ru.practicum.commonData.repository.RequestRepository;
@@ -26,9 +25,10 @@ import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
 import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static ru.practicum.commonData.enums.State.*;
 import static ru.practicum.commonData.mapper.comment.CommentMapper.*;
@@ -53,12 +53,10 @@ public class AdminEventsServiceImpl implements AdminEventsService {
                 pageRequest);
         List<EventDto> result = toEventDtoListFromListEvents(events.toList());
         List<Long> eventIds = requestManager.getIdsForRequest(result);
-        List<CommentEvent> commentDto = commentsRepository.findAllForEvent(eventIds);
-        Map<Long, List<Comment>> comments = commentDto.stream()
-                .collect(Collectors.toMap(CommentEvent::getEventId,CommentEvent::getComment));
-        result.forEach(eventDto -> {
-            eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId())));
-        });
+        Map<Long, List<Comment>> comments = getCommentsByEventIds(eventIds);
+        if (!comments.isEmpty()) {
+            result.forEach(eventDto -> eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId()))));
+        }
         List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
         return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(result), requests);
     }
@@ -94,5 +92,16 @@ public class AdminEventsServiceImpl implements AdminEventsService {
         }
         Event updateEvent = updateEventFromUpdateEventRequest(eventDto,eventOld);
         return toEventDtoFromEvent(updateEvent);
+    }
+
+    public Map<Long, List<Comment>> getCommentsByEventIds(List<Long> eventIds) {
+        List<Object[]> results = commentsRepository.findCommentsByEventIds(eventIds);
+        Map<Long, List<Comment>> commentsByEventId = new HashMap<>();
+        for (Object[] result : results) {
+            Long eventId = (Long) result[0];
+            Comment comment = (Comment) result[1];
+            commentsByEventId.computeIfAbsent(eventId, k -> new ArrayList<>()).add(comment);
+        }
+        return commentsByEventId;
     }
 }

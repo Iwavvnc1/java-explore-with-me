@@ -8,7 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.commonData.model.comment.Comment;
 import ru.practicum.commonData.model.comment.dto.CommentDto;
-import ru.practicum.commonData.model.comment.dto.CommentEvent;
 import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
 import ru.practicum.commonData.repository.CommentsRepository;
 import ru.practicum.commonData.repository.RequestRepository;
@@ -23,6 +22,8 @@ import ru.practicum.commonData.model.event.dto.EventDto;
 import ru.practicum.commonData.model.event.dto.PublicEventsParam;
 import ru.practicum.commonData.repository.EventRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -77,13 +78,22 @@ public class PublicEventsServiceImpl implements PublicEventsService {
         }
         List<EventDto> eventDtos = result.stream().map(EventMapper::toEventDtoFromEvent).collect(Collectors.toList());
         List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
-        List<CommentEvent> commentDto = commentsRepository.findAllForEvent(eventIds);
-        Map<Long, List<Comment>> comments = commentDto.stream()
-                .collect(Collectors.toMap(CommentEvent::getEventId,CommentEvent::getComment));
-        eventDtos.forEach(eventDto -> {
-            eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId())));
-        });
+        Map<Long, List<Comment>> comments = getCommentsByEventIds(eventIds);
+        if (!comments.isEmpty()) {
+            eventDtos.forEach(eventDto -> eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId()))));
+        }
         List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
         return requestManager.getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos),requests);
+    }
+
+    public Map<Long, List<Comment>> getCommentsByEventIds(List<Long> eventIds) {
+        List<Object[]> results = commentsRepository.findCommentsByEventIds(eventIds);
+        Map<Long, List<Comment>> commentsByEventId = new HashMap<>();
+        for (Object[] result : results) {
+            Long eventId = (Long) result[0];
+            Comment comment = (Comment) result[1];
+            commentsByEventId.computeIfAbsent(eventId, k -> new ArrayList<>()).add(comment);
+        }
+        return commentsByEventId;
     }
 }
