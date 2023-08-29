@@ -5,7 +5,10 @@ import lombok.SneakyThrows;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.commonData.model.comment.Comment;
+import ru.practicum.commonData.model.comment.dto.CommentDto;
 import ru.practicum.commonData.model.request.dto.ConfirmedRequest;
+import ru.practicum.commonData.repository.*;
 import ru.practicum.commonData.utils.RequestManager;
 import ru.practicum.commonData.enums.State;
 import ru.practicum.commonData.enums.StateAction;
@@ -18,21 +21,16 @@ import ru.practicum.commonData.model.event.Event;
 import ru.practicum.commonData.model.event.dto.*;
 import ru.practicum.commonData.model.request.ParticipationRequest;
 import ru.practicum.commonData.model.request.dto.ParticipationRequestDto;
-import ru.practicum.commonData.repository.CategoryRepository;
-import ru.practicum.commonData.repository.EventRepository;
-import ru.practicum.commonData.repository.RequestRepository;
-import ru.practicum.commonData.repository.UserRepository;
 import ru.practicum.commonData.utils.customPageRequest.CustomPageRequest;
 import ru.practicum.commonData.utils.statsServiceApi.StatsServiceApi;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.commonData.enums.Status.CONFIRMED;
 import static ru.practicum.commonData.enums.Status.REJECTED;
+import static ru.practicum.commonData.mapper.comment.CommentMapper.*;
 import static ru.practicum.commonData.mapper.event.EventMapper.*;
 import static ru.practicum.commonData.mapper.request.RequestMapper.*;
 
@@ -45,6 +43,7 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
     private final RequestRepository requestRepository;
     private final RequestManager requestManager;
     private final StatsServiceApi statsService;
+    private final CommentsRepository commentsRepository;
 
     @Transactional
     @Override
@@ -73,6 +72,10 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
                 .map(EventMapper::toEventDtoFromEvent)
                 .collect(Collectors.toList());
         List<Long> eventIds = requestManager.getIdsForRequest(eventDtos);
+        Map<Long, List<Comment>> comments = getCommentsByEventIds(eventIds);
+        if (!comments.isEmpty()) {
+            eventDtos.forEach(eventDto -> eventDto.setComment(toCommentDtoList(comments.get(eventDto.getId()))));
+        }
         List<ConfirmedRequest> requests = requestRepository.findConfirmedRequests(eventIds);
         eventDtos = requestManager
                 .getEventDtosWithConfirmedRequest(statsService.getEventDtosWithViews(eventDtos),requests);
@@ -85,6 +88,9 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
         EventDto eventDto = toEventDtoFromEvent(eventRepository.findByIdIsAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Event not found with id = %d and userId = %d", eventId, userId))));
+        List<CommentDto> commentDto = toCommentDtoList(commentsRepository
+                .findAllByEventIdAndDeleteStatusIsFalse(eventId));
+        eventDto.setComment(commentDto);
         ConfirmedRequest request = requestRepository.findConfirmedRequest(eventDto.getId())
                 .orElse(new ConfirmedRequest(0L,0L));
         return requestManager.getEventDtoWithConfirmedRequest(statsService.getEventDtoWithViews(eventDto),request);
@@ -221,5 +227,16 @@ public class PrivateEventsServiceImpl implements PrivateEventsService {
             throw new NotValidException("Field: eventDate. Error: the date and time for which the event is scheduled " +
                     "cannot be earlier than two hours from the current moment. Value: " + eventDate);
         }
+    }
+
+    public Map<Long, List<Comment>> getCommentsByEventIds(List<Long> eventIds) {
+        List<Object[]> results = commentsRepository.findCommentsByEventIds(eventIds);
+        Map<Long, List<Comment>> commentsByEventId = new HashMap<>();
+        for (Object[] result : results) {
+            Long eventId = (Long) result[0];
+            Comment comment = (Comment) result[1];
+            commentsByEventId.computeIfAbsent(eventId, k -> new ArrayList<>()).add(comment);
+        }
+        return commentsByEventId;
     }
 }
